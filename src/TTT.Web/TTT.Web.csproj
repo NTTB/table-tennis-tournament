@@ -12,12 +12,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AspNetCore.Identity.Mongo" Version="8.3.3" />
-        <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="3.1.2" />
-        <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.4" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.4" />
-        <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.4" />
         <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,7 +29,42 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services" />
+      <_ContentIncludedByDefault Remove="Views\Account\AccessDenied.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ConfirmEmail.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ExternalLogin.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ForgotPassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ForgotPasswordConfirmation.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\Lockout.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\Login.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\LoginWith2fa.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\LoginWithRecoveryCode.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\Register.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ResetPassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ResetPasswordConfirmation.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\SignedOut.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Error.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\ChangePassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\Disable2fa.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\EnableAuthenticator.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\ExternalLogins.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\GenerateRecoveryCodes.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\ResetAuthenticator.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\SetPassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\ShowRecoveryCodes.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\TwoFactorAuthentication.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\_ManageNav.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\_StatusMessage.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Manage\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_CookieConsentPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_LoginPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\User\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\User\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\_ViewStart.cshtml" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

@@ -1,39 +1,40 @@
-using AspNetCore.Identity.Mongo;
-using AspNetCore.Identity.Mongo.Model;
-using Microsoft.AspNetCore.Authentication;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
-using TTT.Web.Policy;
 using TTT.Web.Services.Identity;
-using TTT.Web.Services.Mailing;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var connectionStringData = builder.Configuration.GetConnectionString("ttt-data");
+var connectionStringIdentity = builder.Configuration.GetConnectionString("identity");
 
-builder.Services.AddSingleton<IMongoClient>((provider) =>
-{
-    var client = new MongoClient(builder.Configuration.GetConnectionString("ttt-data"));
-    return client;
-});
+// builder.Configuration.
+// Add services to the container
 
-builder.Services.AddIdentityMongoDbProvider<ApplicationUser>
-(
-    identity => { },
-    mongo => { mongo.ConnectionString = builder.Configuration.GetConnectionString("identity"); }
-);
+builder.Services
+    .AddIdentityServices(builder.Configuration);
 
-builder.Services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
-builder.Services.AddSingleton<IAuthorizationHandler, HasClaimHandler>();
 
-builder.Services.AddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateActor = false,
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = false,
+            LogValidationExceptions = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key-here"))
+        };
+    });
+builder.Services.AddAuthorization();
+builder.Services.AddControllers();
 
-// builder.Services.AddIdentityServer()
-//     .AddApiAuthorization<>()
-// builder.Services.AddAuthentication().AddIdentityServerJwt();
-
-builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
