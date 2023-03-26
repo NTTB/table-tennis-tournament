@@ -1,8 +1,7 @@
 using System.Text;
+using T3.Web.Services.Identity;
 
-namespace TTT.Web.Tests.Services.Identity;
-
-using TTT.Web.Services.Identity;
+namespace T3.Web.Test.Services.Identity;
 
 public class PasswordValueTests
 {
@@ -17,15 +16,22 @@ public class PasswordValueTests
             Iterations = iterations,
             Salt = salt,
             Options = additionalOptions,
-            Hash = hash,
+            Hash = hash
         }.ToSerializedString();
     }
 
     public static IEnumerable<TestCaseData> ToSerializedStringCases()
     {
         // Helper methods
-        byte[] ToBytes(string s) => Encoding.UTF8.GetBytes(s);
-        string ToBytesBase64(string s) => Convert.ToBase64String(ToBytes(s));
+        byte[] ToBytes(string s)
+        {
+            return Encoding.UTF8.GetBytes(s);
+        }
+
+        string ToBytesBase64(string s)
+        {
+            return Convert.ToBase64String(ToBytes(s));
+        }
 
         yield return new TestCaseData("v1", 1000, ToBytes("salt"), ToBytes("hash"), Array.Empty<string>())
             .Returns($"v1$1000${ToBytesBase64("salt")}${ToBytesBase64("hash")}")
@@ -44,7 +50,7 @@ public class PasswordValueTests
     public void TestParse(string input, string version, int iterations, byte[] salt, byte[] hash,
         string[] additionalOptions)
     {
-        PasswordValue sut = PasswordValue.Parse(input);
+        var sut = PasswordValue.Parse(input);
 
         Assert.Multiple(() =>
         {
@@ -53,25 +59,30 @@ public class PasswordValueTests
             Assert.That(sut.Salt, Is.EqualTo(salt), "salt is not equal");
             Assert.That(sut.Hash, Is.EqualTo(hash), "hash is not equal");
 
-            var actualOptions = (sut.Options ?? Array.Empty<string>());
+            var actualOptions = sut.Options ?? Array.Empty<string>();
             Assert.That(actualOptions.Length, Is.EqualTo(additionalOptions.Length), "The number of options is not equal");
             if (additionalOptions.Length == actualOptions.Length)
-            {
                 for (var index = 0; index < additionalOptions.Length; index++)
                 {
                     var expectedOption = additionalOptions[index];
                     var actualOption = actualOptions[index];
                     Assert.That(actualOption, Is.EqualTo(expectedOption), $"The option at index {index} is not equal");
                 }
-            }
         });
     }
 
     public static IEnumerable<TestCaseData> ParseCases()
     {
         // Helper methods
-        byte[] ToBytes(string s) => Encoding.UTF8.GetBytes(s);
-        string ToBytesBase64(string s) => Convert.ToBase64String(ToBytes(s));
+        byte[] ToBytes(string s)
+        {
+            return Encoding.UTF8.GetBytes(s);
+        }
+
+        string ToBytesBase64(string s)
+        {
+            return Convert.ToBase64String(ToBytes(s));
+        }
 
         yield return new TestCaseData(
             $"v1$1000${ToBytesBase64("salt")}${ToBytesBase64("hash")}",

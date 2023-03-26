@@ -1,6 +1,7 @@
 using MongoDB.Driver;
-using TTT.Web.Services.Identity;
-using TTT.Web.Services.Identity.Models;
+using T3.Web.Services.Identity.Models;
+
+namespace T3.Web.Services.Identity;
 
 public static class ModuleIdentity
 {

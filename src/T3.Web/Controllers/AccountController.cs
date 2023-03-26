@@ -1,7 +1,8 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using TTT.Web.Services.Identity;
+using T3.Web.Services.Identity;
 
-namespace TTT.Web.Controllers;
+namespace T3.Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -28,5 +29,11 @@ public class AccountController : ControllerBase
     public async Task<AccountLoginResponse> Login([FromBody] AccountLoginRequest request)
     {
         return await _accountLoginService.Login(request);
+    }
+
+    [HttpGet("me")]
+    public ClaimsPrincipal GetMe()
+    {
+        return User;
     }
 }

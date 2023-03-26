@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Microsoft.Extensions.Options;
 
-namespace TTT.Web.Services.Identity;
+namespace T3.Web.Services.Identity;
 
 public interface IPasswordService
 {

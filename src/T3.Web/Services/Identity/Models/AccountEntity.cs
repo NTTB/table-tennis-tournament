@@ -1,4 +1,4 @@
-namespace TTT.Web.Services.Identity.Models;
+namespace T3.Web.Services.Identity.Models;
 
 public record AccountEntity
 {

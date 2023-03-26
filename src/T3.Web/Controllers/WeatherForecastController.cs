@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TTT.Web.Controllers;
+namespace T3.Web.Controllers;
 
 public class WeatherForecast
 {

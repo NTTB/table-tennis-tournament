@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace TTT.Web.Services.Identity;
+namespace T3.Web.Services.Identity;
 
 public class PasswordValue
 {

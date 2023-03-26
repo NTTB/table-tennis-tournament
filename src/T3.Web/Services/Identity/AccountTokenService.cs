@@ -3,9 +3,9 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using TTT.Web.Services.Identity.Models;
+using T3.Web.Services.Identity.Models;
 
-namespace TTT.Web.Services.Identity;
+namespace T3.Web.Services.Identity;
 
 public interface IAccountTokenService
 {
