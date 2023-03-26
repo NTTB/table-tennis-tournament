@@ -15,12 +15,17 @@ public static class ModuleIdentity
             .Configure<PasswordV1Service.Settings>(config.GetSection(nameof(PasswordV1Service)))
             .Configure<AccountTokenService.Settings>(config.GetSection(nameof(AccountTokenService)));
 
-        // Register two IMongoClient instances that are connected to different databases ("identity" and "data")
         collection
-            .AddScoped<IMongoClient>(_ => new MongoClient(config.GetConnectionString("data")))
-            .AddScoped<IMongoDatabase>(sc => sc.GetRequiredService<IMongoClient>().GetDatabase("ttt-data"))
-            .AddScoped<IMongoCollection<AccountEntity>>(sc =>
-                sc.GetRequiredService<IMongoDatabase>().GetCollection<AccountEntity>("accounts"));
+            .AddScoped<MongoUrl>(_ => new MongoUrl(config.GetConnectionString("data")))
+            .AddScoped<IMongoClient>(sc => new MongoClient(sc.GetRequiredService<MongoUrl>()))
+            .AddScoped<IMongoDatabase>(sc =>
+            {
+                var client = sc.GetRequiredService<IMongoClient>();
+                var connectionString = sc.GetRequiredService<MongoUrl>();
+                return client.GetDatabase(connectionString.DatabaseName);
+            })
+            .AddDbCollection<AccountEntity>("accounts")
+            ;
 
         // Add the services
         return collection
@@ -29,5 +34,10 @@ public static class ModuleIdentity
                 .AddScoped<IAccountLoginService, AccountLoginService>()
                 .AddScoped<IAccountTokenService, AccountTokenService>()
             ;
+    }
+    
+    private static IServiceCollection AddDbCollection<T>(this IServiceCollection collection, string collectionName)
+    {
+        return collection.AddScoped<IMongoCollection<T>>(sp => sp.GetRequiredService<IMongoDatabase>().GetCollection<T>(collectionName));
     }
 }

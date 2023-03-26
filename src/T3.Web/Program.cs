@@ -7,30 +7,27 @@ using MongoDB.Driver;
 using T3.Web.Services.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
-var connectionStringData = builder.Configuration.GetConnectionString("ttt-data");
-var connectionStringIdentity = builder.Configuration.GetConnectionString("identity");
+var connectionStringData = config.GetConnectionString("ttt-data");
+var connectionStringIdentity = config.GetConnectionString("identity");
 
 // builder.Configuration.
 // Add services to the container
 
-builder.Services
-    .AddIdentityServices(builder.Configuration);
-
+builder.Services.AddIdentityServices(config);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        var settings = config.GetSection(nameof(AccountTokenService)).Get<AccountTokenService.Settings>()
+                       ?? throw new Exception("Could not find settings for AccountTokenService");
         options.TokenValidationParameters = new TokenValidationParameters()
         {
-            // TODO: Fix security
-            ValidateActor = false,
-            ValidateAudience = false,
-            ValidateIssuer = false,
-            ValidateLifetime = false,
-            ValidateIssuerSigningKey = false,
+            ValidAudience = settings.Audience,
+            ValidIssuer = settings.Issuer,
             LogValidationExceptions = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key-here"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.SecretKey))
         };
     });
 builder.Services.AddAuthorization();

@@ -1,0 +1,6 @@
+<ul>
+  <li><a [routerLink]="['/login']">Login</a></li>
+  <li><a [routerLink]="['/create-account']">Create account</a></li>
+  <li><a [routerLink]="['/logout']">Logout</a></li>
+  <li *ngIf="jwt$|async">{{username$|async}} (Id: {{userId$|async}})</li>
+</ul>

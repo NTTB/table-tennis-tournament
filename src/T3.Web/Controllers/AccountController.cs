@@ -1,5 +1,8 @@
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 using T3.Web.Services.Identity;
 
 namespace T3.Web.Controllers;
@@ -29,11 +32,5 @@ public class AccountController : ControllerBase
     public async Task<AccountLoginResponse> Login([FromBody] AccountLoginRequest request)
     {
         return await _accountLoginService.Login(request);
-    }
-
-    [HttpGet("me")]
-    public ClaimsPrincipal GetMe()
-    {
-        return User;
     }
 }
