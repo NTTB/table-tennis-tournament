@@ -15,16 +15,7 @@ public static class ModuleIdentity
             .Configure<PasswordV1Service.Settings>(config.GetSection(nameof(PasswordV1Service)))
             .Configure<AccountTokenService.Settings>(config.GetSection(nameof(AccountTokenService)));
 
-        collection
-            .AddScoped<MongoUrl>(_ => new MongoUrl(config.GetConnectionString("data")))
-            .AddScoped<IMongoClient>(sc => new MongoClient(sc.GetRequiredService<MongoUrl>()))
-            .AddScoped<IMongoDatabase>(sc =>
-            {
-                var client = sc.GetRequiredService<IMongoClient>();
-                var connectionString = sc.GetRequiredService<MongoUrl>();
-                return client.GetDatabase(connectionString.DatabaseName);
-            })
-            .AddDbCollection<AccountEntity>("accounts")
+        collection.AddDbCollection<AccountEntity>("accounts")
             ;
 
         // Add the services

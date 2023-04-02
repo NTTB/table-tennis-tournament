@@ -1,8 +1,4 @@
-using System.Security.Claims;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
 using T3.Web.Services.Identity;
 
 namespace T3.Web.Controllers;

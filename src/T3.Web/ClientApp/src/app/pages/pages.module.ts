@@ -1,13 +1,17 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { PageHomeComponent } from './page-home/page-home.component';
-import { RouterModule } from '@angular/router';
-import { PageLoginComponent } from './page-login/page-login.component';
-import { PageCreateAccountComponent } from './page-create-account/page-create-account.component';
-import { PageLogoutComponent } from './page-logout/page-logout.component';
-import {AccountModule} from "../account/account.module";
-import { FrontPageHeaderComponent } from './shared/front-page-header/front-page-header.component';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
 
+import {AccountModule} from "../account/account.module";
+import {SetModule} from "../set/set.module";
+
+import {FrontPageHeaderComponent} from './shared/front-page-header/front-page-header.component';
+import {PageCreateAccountComponent} from './page-create-account/page-create-account.component';
+import {PageHomeComponent} from './page-home/page-home.component';
+import {PageLoginComponent} from './page-login/page-login.component';
+import {PageLogoutComponent} from './page-logout/page-logout.component';
+import {PageSetCreateComponent} from './page-set-create/page-set-create.component';
+import {PageSetListComponent} from './page-set-list/page-set-list.component';
 
 
 @NgModule({
@@ -16,12 +20,16 @@ import { FrontPageHeaderComponent } from './shared/front-page-header/front-page-
     PageLoginComponent,
     PageCreateAccountComponent,
     PageLogoutComponent,
-    FrontPageHeaderComponent
+    FrontPageHeaderComponent,
+    PageSetCreateComponent,
+    PageSetListComponent,
   ],
   imports: [
     CommonModule,
     RouterModule,
     AccountModule,
+    SetModule,
   ]
 })
-export class PagesModule { }
+export class PagesModule {
+}

@@ -1,0 +1,16 @@
+<table *ngIf="sets$|async as sets">
+  <thead>
+  <tr>
+    <th>Id</th>
+    <th>DisplayName</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let set of sets">
+    <td>{{set.id}}</td>
+    <td>{{set.displayName}}</td>
+    <th><button (click)="delete(set)">❌</button></th>
+  </tr>
+  </tbody>
+</table>

@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using T3.Web.Services.Identity.DTO;
 using T3.Web.Services.Identity.Models;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -11,6 +12,7 @@ namespace T3.Web.Services.Identity;
 public interface IAccountTokenService
 {
     Task<string> GenerateJwtToken(AccountEntity user);
+    CurrentIdentity GetIdentity(ClaimsPrincipal principal);
 }
 
 public class AccountTokenService : IAccountTokenService
@@ -41,7 +43,7 @@ public class AccountTokenService : IAccountTokenService
                 new Claim(JwtRegisteredClaimNames.Name, user.Username),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
             }),
-            
+
             Audience = _settings.Value.Audience,
             Issuer = _settings.Value.Issuer,
             Expires = DateTime.UtcNow.AddMonths(6),
@@ -52,5 +54,25 @@ public class AccountTokenService : IAccountTokenService
         var securityToken = tokenHandler.CreateToken(tokenDescriptor);
         var token = tokenHandler.WriteToken(securityToken);
         return token;
+    }
+
+    public CurrentIdentity GetIdentity(ClaimsPrincipal principal)
+    {
+        if (!principal.Identity?.IsAuthenticated ?? false)
+        {
+            throw new Exception("User is not authenticated");
+        }
+
+        var username = principal.FindFirstValue(JwtRegisteredClaimNames.Name) ?? throw new Exception("Principal has no username")
+        {
+            Data = { { "ClaimType", JwtRegisteredClaimNames.Name } }
+        };
+
+        var subject = principal.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? throw new Exception("Principal has no subject (user id)")
+        {
+            Data = { { "ClaimType", JwtRegisteredClaimNames.Sub } }
+        };
+
+        return new CurrentIdentity(username, Guid.Parse(subject));
     }
 }
