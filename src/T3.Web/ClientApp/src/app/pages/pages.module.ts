@@ -4,6 +4,7 @@ import {RouterModule} from '@angular/router';
 
 import {AccountModule} from "../account/account.module";
 import {SetModule} from "../set/set.module";
+import {ChatModule} from "../chat/chat.module";
 
 import {FrontPageHeaderComponent} from './shared/front-page-header/front-page-header.component';
 import {PageCreateAccountComponent} from './page-create-account/page-create-account.component';
@@ -12,6 +13,7 @@ import {PageLoginComponent} from './page-login/page-login.component';
 import {PageLogoutComponent} from './page-logout/page-logout.component';
 import {PageSetCreateComponent} from './page-set-create/page-set-create.component';
 import {PageSetListComponent} from './page-set-list/page-set-list.component';
+import {PageChatComponent} from './page-chat/page-chat.component';
 
 
 @NgModule({
@@ -23,11 +25,13 @@ import {PageSetListComponent} from './page-set-list/page-set-list.component';
     FrontPageHeaderComponent,
     PageSetCreateComponent,
     PageSetListComponent,
+    PageChatComponent,
   ],
   imports: [
     CommonModule,
     RouterModule,
     AccountModule,
+    ChatModule,
     SetModule,
   ]
 })

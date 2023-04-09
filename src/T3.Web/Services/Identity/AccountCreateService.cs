@@ -1,19 +1,19 @@
 using MongoDB.Driver;
-using T3.Web.Services.Identity.Models;
+using T3.Web.Services.Identity.Entities;
 
 namespace T3.Web.Services.Identity;
 
 public record AccountCreateRequest
 {
-    public string Username { get; set; }
-    public string Password { get; set; }
+    public required string Username { get; set; }
+    public required string Password { get; set; }
 }
 
 public record AccountCreateResponse
 {
-    public string Username { get; set; }
-    public Guid Id { get; set; }
-    public DateTime CreatedAtUtc { get; set; }
+    public required string Username { get; set; }
+    public required Guid Id { get; set; }
+    public required DateTime CreatedAtUtc { get; set; }
 }
 
 public interface IAccountCreateService

@@ -1,9 +1,11 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using T3.Web.Hubs;
 using T3.Web.Services.Data;
 using T3.Web.Services.Identity;
 using T3.Web.Services.Set;
+using T3.Web.Services.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -11,9 +13,11 @@ var config = builder.Configuration;
 // Add services to the container
 
 builder.Services
+    .AddSharedModule()
     .AddDataService(config)
     .AddIdentityServices(config)
     .AddSetModule()
+    .AddSignalR()
     ;
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -52,6 +56,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     "default",
     "{controller}/{action=Index}/{id?}");
+
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.MapFallbackToFile("index.html");
 

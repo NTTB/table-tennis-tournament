@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using T3.Web.Services.Set;
+using T3.Web.Services.Set.Entities;
 using T3.Web.Services.Set.Models;
 
 namespace T3.Web.Controllers;
@@ -8,45 +9,47 @@ namespace T3.Web.Controllers;
 [Route("api/[controller]")]
 public class SetController : ControllerBase
 {
-    private readonly ISearchSetService _searchSetService;
-    private readonly IDeleteSetService _deleteSetService;
-    private readonly IUpdateSetService _updateSetService;
-    private readonly ICreateSetService _createSetService;
+    private readonly ISetService _setService;
+    private readonly ISetCommitService _setCommitService;
 
     public SetController(
-        ISearchSetService searchSetService,
-        IDeleteSetService deleteSetService,
-        IUpdateSetService updateSetService,
-        ICreateSetService createSetService
+        ISetService setService,
+        ISetCommitService setCommitService
     )
     {
-        _searchSetService = searchSetService;
-        _deleteSetService = deleteSetService;
-        _updateSetService = updateSetService;
-        _createSetService = createSetService;
+        _setService = setService;
+        _setCommitService = setCommitService;
     }
     
     [HttpGet("")]
     public async Task<SetEntity[]> Search()
     {
-        return await _searchSetService.GetAll();
+        return await _setService.GetAll();
     }
     
     [HttpGet("{id}")]
     public async Task<SetEntity> GetById(Guid id)
     {
-        return await _searchSetService.GetById(id);
+        return await _setService.GetById(id);
+    }
+    
+    [HttpGet("{id}/commits")]
+    public async Task<IEnumerable<SetCommit>> GetCommits(Guid id)
+    {
+        // NOTE: This function is not intended to be used by application for polling, so we will likely remove it.
+        return await _setCommitService.GetAll(new SetId(id));
     }
     
     [HttpDelete("{id}")]
     public async Task Delete(Guid id)
     {
-        await _deleteSetService.DeleteById(id);
+        await _setService.DeleteById(id);
     }
 
     [HttpPost("create")]
-    public async Task<CreateSetResponse> Create([FromBody] CreateSetRequest request)
+    public async Task<SetEntity> Create([FromBody] CreateSetRequest request)
     {
-        return await _createSetService.CreateSet(request);
+        var result = await _setService.CreateSet(request);
+        return result.Entity;
     }
 }
