@@ -14,6 +14,7 @@ import {PageLogoutComponent} from './page-logout/page-logout.component';
 import {PageSetCreateComponent} from './page-set-create/page-set-create.component';
 import {PageSetListComponent} from './page-set-list/page-set-list.component';
 import {PageChatComponent} from './page-chat/page-chat.component';
+import { PageSetViewComponent } from './page-set-view/page-set-view.component';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {PageChatComponent} from './page-chat/page-chat.component';
     PageSetCreateComponent,
     PageSetListComponent,
     PageChatComponent,
+    PageSetViewComponent,
   ],
   imports: [
     CommonModule,

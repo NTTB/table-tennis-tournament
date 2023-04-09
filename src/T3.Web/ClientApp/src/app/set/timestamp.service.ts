@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
-import {lastValueFrom} from 'rxjs';
-import {TimestampApiService} from "./timestamp-api.service";
-import {DateTime} from 'luxon';
-import {Timestamp} from "./models/timestamp";
-import {ServerTimestamp} from "./models/server-timestamp";
+import { Injectable } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
+import { TimestampApiService } from "./timestamp-api.service";
+import { DateTime } from 'luxon';
+import { Timestamp } from "./models/timestamp";
+import { ServerTimestamp } from "./models/server-timestamp";
 
 @Injectable({
   providedIn: 'root'
@@ -29,16 +29,16 @@ export class TimestampService {
     }
 
     return {
-      server: this.latest.serverTimestamp,
-      client: {
-        milliseconds: this.latest!.fetchAt.diffNow().milliseconds,
+      serverTimestamp: this.latest.serverTimestamp,
+      clientOffset: {
+        milliseconds: -this.latest!.fetchAt.diffNow().milliseconds,
       }
     };
   }
 
   private async ensureServerIsRecent() {
     // Check if we have a timestamp that is recent enough
-    if (this.latest != null && this.latest.fetchAt.diffNow().hours < 2) {
+    if (this.latest != null && (-this.latest.fetchAt.diffNow().hours) < 2) {
       return;
     }
 
@@ -57,7 +57,7 @@ export class TimestampService {
     }
 
     const end = performance.now();
-    const measure = performance.measure('TimestampService.refreshTimestamp', {start, end});
+    const measure = performance.measure('TimestampService.refreshTimestamp', { start, end });
     if (measure.duration > 1000) {
       console.warn("The refresh to the server took more than 1000 milliseconds", measure);
     }

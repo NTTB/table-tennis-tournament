@@ -1,3 +1,4 @@
+using MongoDB.Bson.Serialization;
 using T3.Web.Services.Data;
 using T3.Web.Services.Set.Entities;
 using T3.Web.Services.Set.Models;
@@ -8,6 +9,8 @@ public static class SetModule
 {
     public static IServiceCollection AddSetModule(this IServiceCollection collection)
     {
+        BsonClassMap.RegisterClassMap<ISetCommitBody>();
+
         return collection
             .AddDbCollection<SetEntity>("sets")
             .AddDbCollection<ServerTimestampEntity>("serverTimestamps")
@@ -16,5 +19,7 @@ public static class SetModule
             .AddScoped<ISetService, SetService>()
             .AddScoped<ISetCommitService, SetCommitService>()
             ;
+        
+        
     }
 }

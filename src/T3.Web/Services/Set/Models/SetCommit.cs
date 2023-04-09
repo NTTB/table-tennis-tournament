@@ -1,3 +1,5 @@
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace T3.Web.Services.Set.Models;
 
 public record SetCommit
@@ -23,14 +25,18 @@ public record SetCommitSignature
     public required string Value { get; init; }
 }
 
-public record Score(int Home, int Away);
+public record Score
+{
+    public required int Home { get; init; }
+    public required int Away { get; init; }
+}
 
 public enum SetCommitBodyType
 {
     NoOp,
 }
 
-public interface ISetCommitBody
+public abstract class ISetCommitBody
 {
     public SetCommitBodyType Type { get; }
 }

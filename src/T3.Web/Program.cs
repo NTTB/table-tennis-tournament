@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using T3.Web.Hubs;
@@ -17,7 +18,14 @@ builder.Services
     .AddDataService(config)
     .AddIdentityServices(config)
     .AddSetModule()
-    .AddSignalR()
+    .AddSignalR(options =>
+    {
+        options.EnableDetailedErrors = true;
+    }).AddJsonProtocol(x=>
+    {
+        x.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        x.PayloadSerializerOptions.Converters.Add(new SetCommitBodyConvertor());
+    })
     ;
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -71,6 +79,7 @@ app.MapControllerRoute(
     "{controller}/{action=Index}/{id?}");
 
 app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<SetHub>("/hubs/set");
 
 app.MapFallbackToFile("index.html");
 

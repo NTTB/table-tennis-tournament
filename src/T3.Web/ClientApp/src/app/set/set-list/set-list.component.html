@@ -8,7 +8,7 @@
   </thead>
   <tbody>
   <tr *ngFor="let set of sets">
-    <td>{{set.id}}</td>
+    <td><a [routerLink]="['.', set.id]">{{set.id}}</a></td>
     <td>{{set.displayName}}</td>
     <th><button (click)="delete(set)">❌</button></th>
   </tr>

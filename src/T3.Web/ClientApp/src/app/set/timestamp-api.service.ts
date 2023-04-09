@@ -13,6 +13,6 @@ export class TimestampApiService {
   }
 
   getLatestTimestamp(): Observable<ServerTimestamp> {
-    return this.api.post<ServerTimestamp>('timestamp/latest', null);
+    return this.api.post<ServerTimestamp>('api/timestamp/latest', null);
   }
 }

@@ -47,17 +47,9 @@ public class TimestampService : ITimestampService
 
     public async Task EnsureRecentTimestamp()
     {
-        try
-        {
-            Monitor.Enter(SyncLock);
             var latest = await GetLatestOrDefault();
             if (latest == null || RequireServerSideRefresh(latest))
                 await InsertNew();
-        }
-        finally
-        {
-            Monitor.Exit(SyncLock);
-        }
     }
 
     public async Task<ServerTimestampEntity> GetLatest()
@@ -94,7 +86,7 @@ public class TimestampService : ITimestampService
             Id = Guid.NewGuid(),
             Year = now.Year,
             DayOfYear = now.DayOfYear,
-            MillisecondOfDay = DateTime.UtcNow.Millisecond,
+            MillisecondOfDay = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds,
             Noise = Random.Shared.Next()
         };
 
