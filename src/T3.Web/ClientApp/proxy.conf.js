@@ -7,12 +7,12 @@ const PROXY_CONFIG = [
   {
     context: [
       "/api",
+      "/hubs"
    ],
     target: target,
     secure: false,
-    headers: {
-      Connection: 'Keep-Alive'
-    }
+    changeOrigin: true,
+    ws: true,
   }
 ]
 
