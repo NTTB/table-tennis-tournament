@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable, TeardownLogic} from 'rxjs';
 import * as signalR from "@microsoft/signalr";
 import {LogLevel} from "@microsoft/signalr";
+import {JwtService} from "../shared/jwt.service";
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,9 @@ import {LogLevel} from "@microsoft/signalr";
 export class ChatService {
   private connection = new signalR.HubConnectionBuilder()
     .configureLogging(LogLevel.Trace)
-    .withUrl("/hubs/chat")
+    .withUrl("/hubs/chat", {
+      accessTokenFactory: () => this.jwtService.getToken() ?? ""
+    })
     .build();
 
   public messages$ = new Observable<{ username: string, message: string }>((observer): TeardownLogic => {
@@ -37,7 +40,7 @@ export class ChatService {
     }
   });
 
-  constructor() {
+  constructor(private readonly jwtService: JwtService) {
   }
 
   Send(user: string, message: string) {
