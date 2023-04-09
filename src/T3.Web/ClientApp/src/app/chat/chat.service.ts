@@ -10,11 +10,9 @@ export class ChatService {
   private connection = new signalR.HubConnectionBuilder()
     .configureLogging(LogLevel.Trace)
     .withUrl("/hubs/chat")
-    // .withUrl("/hubs/chat", { transport: signalR.HttpTransportType.LongPolling | signalR.HttpTransportType.ServerSentEvents})
-    // .withUrl("wss://localhost:7035/hubs/chat", { skipNegotiation: false, transport: signalR.HttpTransportType.WebSockets })
-    // .withUrl({})
     .build();
-  public messageObservable = new Observable<{ username: string, message: string }>((observer): TeardownLogic => {
+
+  public messages$ = new Observable<{ username: string, message: string }>((observer): TeardownLogic => {
     console.log("Subscribing to chat hub");
     this.connection.on('ReceiveMessage', (username, message) => {
       observer.next({username, message});
