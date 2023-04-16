@@ -44,7 +44,8 @@ public class AccountCreateService : IAccountCreateService
             Id = Guid.NewGuid(),
             Username = request.Username,
             PasswordHash = password.ToSerializedString(),
-            CreatedAtUtc = DateTime.UtcNow
+            CreatedAtUtc = DateTime.UtcNow,
+            Keys = Array.Empty<AccountKey>()
         };
 
         await _collection.InsertOneAsync(user);

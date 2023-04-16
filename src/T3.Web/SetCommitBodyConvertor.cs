@@ -2,14 +2,14 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using T3.Web.Services.Set.Models;
 
-public class SetCommitBodyConvertor : JsonConverter<ISetCommitBody>
+public class SetCommitBodyConvertor : JsonConverter<SetCommitBody>
 {
     public override bool CanConvert(Type typeToConvert)
     {
-        return typeToConvert == (typeof(ISetCommitBody));
+        return typeToConvert == (typeof(SetCommitBody));
     }
 
-    public override ISetCommitBody? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override SetCommitBody? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
         JsonElement typeElement;
@@ -29,7 +29,7 @@ public class SetCommitBodyConvertor : JsonConverter<ISetCommitBody>
         throw new NotImplementedException("No converter for type: " + type);
     }
 
-    public override void Write(Utf8JsonWriter writer, ISetCommitBody value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, SetCommitBody value, JsonSerializerOptions options)
     {
         JsonSerializer.Serialize(writer, value, value.GetType(), options);
     }

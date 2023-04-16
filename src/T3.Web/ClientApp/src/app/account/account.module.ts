@@ -8,11 +8,13 @@ import {AccountApiService} from "./account-api.service";
 
 import {LoginFormComponent} from './login-form/login-form.component';
 import {CreateAccountFormComponent} from './create-account-form/create-account-form.component';
+import { AccountKeysComponent } from './account-keys/account-keys.component';
 
 @NgModule({
   declarations: [
     CreateAccountFormComponent,
     LoginFormComponent,
+    AccountKeysComponent,
   ],
   imports: [
     CommonModule,
@@ -25,6 +27,7 @@ import {CreateAccountFormComponent} from './create-account-form/create-account-f
   ],
   exports: [
     CreateAccountFormComponent,
+    AccountKeysComponent,
     LoginFormComponent,
   ]
 })

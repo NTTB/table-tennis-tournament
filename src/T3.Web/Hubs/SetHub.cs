@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using T3.Web.Services.Identity;
 using T3.Web.Services.Set;
 using T3.Web.Services.Set.Models;
 
@@ -6,20 +7,29 @@ namespace T3.Web.Hubs;
 
 public class SetHub : Hub
 {
-    private readonly ISetCommitService _setCommitService;
+    private readonly IAccountTokenService _accountTokenService;
     private readonly ILogger<SetHub> _logger;
+    private readonly ISetCommitService _setCommitService;
 
-    public SetHub(ISetCommitService setCommitService, ILogger<SetHub> logger)
+    public SetHub(ISetCommitService setCommitService,
+        IAccountTokenService accountTokenService,
+        ILogger<SetHub> logger
+    )
     {
         _setCommitService = setCommitService;
+        _accountTokenService = accountTokenService;
         _logger = logger;
     }
-    
+
     public async Task Push(SetCommit commit)
     {
         // Store changes
+        var identity = _accountTokenService.GetIdentity(Context.User);
+        if (identity.AccountId != commit.Header.Author.UserId.Value)
+            throw new Exception("AccountId of user does not match author of commit");
+
         await _setCommitService.Add(commit);
-        
+
         // Inform clients
         _logger.LogInformation("Sending SetCommitPushed to group {SetId}", SetIdGroup(commit.Header.SetId));
         await Clients.Groups(SetIdGroup(commit.Header.SetId)).SendAsync("SetCommitPushed", commit);
@@ -30,8 +40,8 @@ public class SetHub : Hub
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, AllSetGroupName());
     }
-    
-    
+
+
     public async Task RemoveSetWatchAll()
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, AllSetGroupName());
@@ -39,7 +49,8 @@ public class SetHub : Hub
 
     public async Task AddSetWatch(SetId setId)
     {
-        _logger.LogInformation("Adding connection {ConnectionId} to group {SetId}", Context.ConnectionId, SetIdGroup(setId));
+        _logger.LogInformation("Adding connection {ConnectionId} to group {SetId}", Context.ConnectionId,
+            SetIdGroup(setId));
         await Groups.AddToGroupAsync(Context.ConnectionId, SetIdGroup(setId));
     }
 
@@ -47,13 +58,20 @@ public class SetHub : Hub
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, SetIdGroup(setId));
     }
-    
+
     public async Task<SetCommit[]> GetAllCommits(SetId setId)
     {
         var commits = await _setCommitService.GetAll(setId);
         return commits.ToArray();
     }
-    
-    private static string AllSetGroupName() => "set-*";
-    private static string SetIdGroup(SetId setId) => $"set-{setId.Value}";
+
+    private static string AllSetGroupName()
+    {
+        return "set-*";
+    }
+
+    private static string SetIdGroup(SetId setId)
+    {
+        return $"set-{setId.Value}";
+    }
 }

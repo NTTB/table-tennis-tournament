@@ -7,6 +7,7 @@ import {PageSetCreateComponent} from "./page-set-create/page-set-create.componen
 import {PageSetListComponent} from "./page-set-list/page-set-list.component";
 import {PageChatComponent} from "./page-chat/page-chat.component";
 import {PageSetViewComponent} from "./page-set-view/page-set-view.component";
+import {PageAccountKeysComponent} from "./page-account-keys/page-account-keys.component";
 
 export const userRoutes: Routes = [
   // { path: 'status', component: PageStatusComponent },
@@ -18,6 +19,7 @@ export const userRoutes: Routes = [
   {path: 'login', component: PageLoginComponent},
   {path: 'create-account', component: PageCreateAccountComponent},
   {path: 'logout', component: PageLogoutComponent},
+  {path: 'account/keys', component: PageAccountKeysComponent},
 
   {path: 'sets', component: PageSetListComponent},
   {path: 'sets/create', component: PageSetCreateComponent},

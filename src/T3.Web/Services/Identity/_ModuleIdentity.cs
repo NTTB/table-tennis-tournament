@@ -23,6 +23,7 @@ public static class ModuleIdentity
                 .AddScoped<IPasswordService, PasswordV1Service>()
                 .AddScoped<IAccountCreateService, AccountCreateService>()
                 .AddScoped<IAccountLoginService, AccountLoginService>()
+                .AddScoped<IAccountPublicKeyService, AccountPublicKeyService>()
                 .AddScoped<IAccountTokenService, AccountTokenService>()
             ;
     }

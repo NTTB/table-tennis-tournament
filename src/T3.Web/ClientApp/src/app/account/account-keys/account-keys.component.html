@@ -1,0 +1,28 @@
+<h2>Keys</h2>
+<p>
+  Our system works using public/private key pairs that is associated with a user.
+  The public key is used to verify data and the private key is used to sign message.
+  The private key is never sent to the server and is only stored on the client.
+  The public key is sent to the server and is used to verify the signature of the message.
+</p>
+
+<p>Keys are automatically generated on login</p>
+
+<table *ngIf="keys$|async as keys">
+  <thead>
+  <tr>
+    <th>Public Key</th>
+    <th>Created At</th>
+    <th>Revoked At</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody >
+  <tr *ngFor="let key of keys">
+    <td>{{key.publicKey}}</td>
+    <td>{{key.createdAtUtc | date:'medium'}}</td>
+    <td>{{key.revokedAtUtc | date:'medium'}}</td>
+    <td>
+      <button *ngIf="!key.revokedAtUtc" (click)="revokeKey(key)">Revoke</button>
+    </td>
+</table>

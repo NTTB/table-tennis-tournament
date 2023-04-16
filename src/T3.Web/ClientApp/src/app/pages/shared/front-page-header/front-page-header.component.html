@@ -2,7 +2,12 @@
   <li><a [routerLink]="['/login']">Login</a></li>
   <li><a [routerLink]="['/create-account']">Create account</a></li>
   <li><a [routerLink]="['/logout']">Logout</a></li>
-  <li *ngIf="jwt$|async">{{username$|async}} (Id: {{userId$|async}})</li>
+  <li *ngIf="jwt$|async">
+    {{username$|async}} (Id: {{userId$|async}})
+    <ul>
+      <li><a [routerLink]="['/account', 'keys']">Keys</a> </li>
+    </ul>
+  </li>
 
   <li><a [routerLink]="['/sets']">Sets</a></li>
 

@@ -12,7 +12,7 @@ namespace T3.Web.Services.Identity;
 public interface IAccountTokenService
 {
     Task<string> GenerateJwtToken(AccountEntity user);
-    CurrentIdentity GetIdentity(ClaimsPrincipal principal);
+    CurrentIdentity GetIdentity(ClaimsPrincipal? principal);
 }
 
 public class AccountTokenService : IAccountTokenService
@@ -41,7 +41,8 @@ public class AccountTokenService : IAccountTokenService
             Subject = new ClaimsIdentity(new Claim[]
             {
                 new Claim(JwtRegisteredClaimNames.Name, user.Username),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim("userId", user.Id.ToString()),
             }),
 
             Audience = _settings.Value.Audience,
@@ -56,8 +57,13 @@ public class AccountTokenService : IAccountTokenService
         return token;
     }
 
-    public CurrentIdentity GetIdentity(ClaimsPrincipal principal)
+    public CurrentIdentity GetIdentity(ClaimsPrincipal? principal)
     {
+        if (principal == null)
+        {
+            throw new Exception("User is not authenticated");
+        }
+        
         if (!principal.Identity?.IsAuthenticated ?? false)
         {
             throw new Exception("User is not authenticated");
@@ -68,7 +74,7 @@ public class AccountTokenService : IAccountTokenService
             Data = { { "ClaimType", JwtRegisteredClaimNames.Name } }
         };
 
-        var subject = principal.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? throw new Exception("Principal has no subject (user id)")
+        var subject = principal.FindFirstValue("userId") ?? throw new Exception("Principal has no user id")
         {
             Data = { { "ClaimType", JwtRegisteredClaimNames.Sub } }
         };
