@@ -1,0 +1,36 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label>Display name:
+      <input type="text"
+             formControlName="displayName">
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Device name:
+      <input type="text"
+             formControlName="deviceName">
+    </label>
+  </div>
+
+  <div>
+    <label>
+      <input type="checkbox"
+             formControlName="newSession">
+      Generate a new session id
+    </label>
+  </div>
+
+  <div>
+    <label>
+      <input type="checkbox"
+             formControlName="regenerateKeys">
+      Regenerate private keys
+    </label>
+  </div>
+
+  <div>
+    <button type="submit">Submit</button>
+  </div>
+</form>

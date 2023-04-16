@@ -16,6 +16,7 @@ import {PageSetListComponent} from './page-set-list/page-set-list.component';
 import {PageChatComponent} from './page-chat/page-chat.component';
 import { PageSetViewComponent } from './page-set-view/page-set-view.component';
 import { PageAccountKeysComponent } from './page-account-keys/page-account-keys.component';
+import { PageLoginPostComponent } from './page-login-post/page-login-post.component';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import { PageAccountKeysComponent } from './page-account-keys/page-account-keys.
     PageChatComponent,
     PageSetViewComponent,
     PageAccountKeysComponent,
+    PageLoginPostComponent,
   ],
   imports: [
     CommonModule,
