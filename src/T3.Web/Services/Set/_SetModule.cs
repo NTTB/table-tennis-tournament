@@ -10,6 +10,8 @@ public static class SetModule
     public static IServiceCollection AddSetModule(this IServiceCollection collection)
     {
         BsonClassMap.RegisterClassMap<SetCommitBody>();
+        BsonClassMap.RegisterClassMap<SetCommitBodyNoOp>();
+        BsonClassMap.RegisterClassMap<SetCommitBodySetScoreChange>();
 
         return collection
             .AddDbCollection<SetEntity>("sets")

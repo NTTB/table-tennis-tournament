@@ -1,3 +1,5 @@
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace T3.Web.Services.Set.Models;
 public enum SetCommitBodyType
 {

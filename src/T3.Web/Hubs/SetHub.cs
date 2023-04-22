@@ -41,7 +41,6 @@ public class SetHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, AllSetGroupName());
     }
 
-
     public async Task RemoveSetWatchAll()
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, AllSetGroupName());
@@ -52,6 +51,13 @@ public class SetHub : Hub
         _logger.LogInformation("Adding connection {ConnectionId} to group {SetId}", Context.ConnectionId,
             SetIdGroup(setId));
         await Groups.AddToGroupAsync(Context.ConnectionId, SetIdGroup(setId));
+        
+        // Return the latest state? Or should we push it? I prefer push.
+        var commits = await _setCommitService.GetAll(setId);
+        foreach (var commit in commits)
+        {
+            await Clients.Caller.SendAsync("SetCommitPushed", commit);
+        }
     }
 
     public async Task RemoveSetWatch(SetId setId)
