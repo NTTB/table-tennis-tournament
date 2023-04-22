@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { TimestampApiService } from "./timestamp-api.service";
-import { DateTime } from 'luxon';
 import { Timestamp } from "./models/timestamp";
 import { ServerTimestamp } from "./models/server-timestamp";
+import {differenceInMilliseconds, differenceInHours} from 'date-fns';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ import { ServerTimestamp } from "./models/server-timestamp";
 export class TimestampService {
   private latest?: {
     serverTimestamp: ServerTimestamp,
-    fetchAt: DateTime,
+    fetchAt: Date,
   };
 
   constructor(
@@ -31,14 +31,14 @@ export class TimestampService {
     return {
       serverTimestamp: this.latest.serverTimestamp,
       clientOffset: {
-        milliseconds: -this.latest!.fetchAt.diffNow().milliseconds,
+        milliseconds: differenceInMilliseconds( new Date(),this.latest.fetchAt)
       }
     };
   }
 
   private async ensureServerIsRecent() {
     // Check if we have a timestamp that is recent enough
-    if (this.latest != null && (-this.latest.fetchAt.diffNow().hours) < 2) {
+    if (this.latest != null && differenceInHours( new Date(), this.latest.fetchAt) < 2) {
       return;
     }
 
@@ -48,7 +48,7 @@ export class TimestampService {
       const result = await lastValueFrom(this.api.getLatestTimestamp());
       this.latest = {
         serverTimestamp: result,
-        fetchAt: DateTime.utc(),
+        fetchAt: new Date(),
       };
     } catch {
       // If we fail to get a timestamp, we remove the latest timestamp and throw an error

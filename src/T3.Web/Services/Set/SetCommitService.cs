@@ -78,7 +78,11 @@ public class SetCommitService : ISetCommitService
     private void ValidatePayload(SetCommit commit)
     {
         var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web) {
-            Converters = { new JsonStringEnumConverter() }
+            Converters =
+            {
+                new JsonStringEnumConverter(),
+                new SetCommitBodyConvertor()
+            }
         };
         
         var commitElement = JsonSerializer.SerializeToElement(commit, jsonSerializerOptions);

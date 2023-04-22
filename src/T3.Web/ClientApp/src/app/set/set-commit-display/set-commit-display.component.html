@@ -1,0 +1,60 @@
+<h2>Header</h2>
+<table>
+  <tr>
+    <th>Commit Id</th>
+    <td>{{header.commitId.value}}</td>
+  </tr>
+  <tr>
+    <th>Previous commit Id</th>
+    <td>{{header.previousCommitId?.value}}</td>
+  </tr>
+  <tr>
+    <th>SetId</th>
+    <td>{{header.setId.value}}</td>
+  </tr>
+  <tr>
+    <th>CreatedAt</th>
+    <td>
+      <details>
+        <summary>{{createdAtDateTime | date:'medium'}}</summary>
+        <div>
+          <table>
+            <tr>
+              <th>serverTimestamp.year</th>
+              <td>{{header.createdAt.serverTimestamp.year}}</td>
+            </tr>
+            <tr>
+              <th>serverTimestamp.dayOfYear</th>
+              <td>{{header.createdAt.serverTimestamp.dayOfYear}}</td>
+            </tr>
+            <tr>
+              <th>serverTimestamp.millisecondOfDay</th>
+              <td>{{header.createdAt.serverTimestamp.millisecondOfDay}}</td>
+            </tr>
+            <tr>
+              <th>serverTimestamp.noise</th>
+              <td>{{header.createdAt.serverTimestamp.noise}}</td>
+            </tr>
+            <tr>
+              <th>clientOffset.milliseconds</th>
+              <td>{{header.createdAt.clientOffset.milliseconds}}</td>
+            </tr>
+          </table>
+        </div>
+      </details>
+    </td>
+  </tr>
+</table>
+
+<h2>View</h2>
+<table>
+  <tr>
+    <th>SetScore</th>
+    <td>{{view.gamesWon.home}} - {{view.gamesWon.away}}</td>
+  </tr>
+</table>
+
+<h2>Body</h2>
+<code>
+  <pre>{{setCommit.body | json}}</pre>
+</code>

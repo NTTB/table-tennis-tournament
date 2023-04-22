@@ -5,6 +5,7 @@ import { SetListComponent } from './set-list/set-list.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { SetViewComponent } from './set-view/set-view.component';
 import { RouterModule } from '@angular/router';
+import { SetCommitDisplayComponent } from './set-commit-display/set-commit-display.component';
 
 
 
@@ -12,7 +13,8 @@ import { RouterModule } from '@angular/router';
   declarations: [
     SetFormComponent,
     SetListComponent,
-    SetViewComponent
+    SetViewComponent,
+    SetCommitDisplayComponent
   ],
   imports: [
     CommonModule,
@@ -23,7 +25,8 @@ import { RouterModule } from '@angular/router';
   exports: [
     SetFormComponent,
     SetListComponent,
-    SetViewComponent
+    SetViewComponent,
+    SetCommitDisplayComponent
   ]
 })
 export class SetModule { }

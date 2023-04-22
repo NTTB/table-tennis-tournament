@@ -1,7 +1,7 @@
 namespace T3.Web.Services.Set.Models;
 
-public record Score
+public class Score
 {
-    public required int Home { get; init; }
-    public required int Away { get; init; }
+    public int Home { get; set; }
+    public int Away { get; set; }
 }

@@ -6,4 +6,4 @@
 <button (click)="increaseSetScore('away')">Increase SetScore Away</button>
 
 <h2>LastMessage</h2>
-<code>{{setState$|async|json}}</code>
+<app-set-commit-display *ngIf="setState$|async as commit" [setCommit]="commit"></app-set-commit-display>

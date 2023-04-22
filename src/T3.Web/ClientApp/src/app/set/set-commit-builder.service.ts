@@ -7,6 +7,7 @@ import {v4 as uuidv4} from 'uuid';
 import {TimestampService} from "./timestamp.service";
 import {KeyStorageService} from "../account/key-storage.service";
 import {CryptoKeyService} from "../account/crypto-key.service";
+import {IdentityService} from "../account/identity.service";
 
 
 /**
@@ -20,7 +21,18 @@ export class SetCommitBuilderService {
     private readonly timestampService: TimestampService,
     private readonly keyStorageService: KeyStorageService,
     private readonly cryptoKeyService: CryptoKeyService,
+    private readonly identityService: IdentityService,
   ) {
+    const userId = this.identityService.userId;
+    const sessionId = this.identityService.stored.sessionId;
+    if (userId && sessionId) {
+      this.updateAuthor({
+        displayName: this.identityService.stored.displayName,
+        sessionId: {value: sessionId},
+        userId: {value: userId},
+        deviceName: this.identityService.stored.deviceName,
+      });
+    }
   }
 
   private _author: SetCommitAuthor = {
