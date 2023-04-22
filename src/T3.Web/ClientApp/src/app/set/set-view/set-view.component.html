@@ -1,7 +1,9 @@
 <h2>State</h2>
-<code>{{lastState$|async|json}}</code>
+<code>{{connectionState$|async|json}}</code>
 
-<button (click)="sendUpdate()">Send update</button>
+<button (click)="sendNoOp()">Send NoOp</button>
+<button (click)="increaseSetScore('home')">Increase SetScore Home</button>
+<button (click)="increaseSetScore('away')">Increase SetScore Away</button>
 
 <h2>LastMessage</h2>
-<code>{{lastMessage$|async|json}}</code>
+<code>{{setState$|async|json}}</code>

@@ -1,8 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {SetCommitService} from "../set-commit.service";
 import {SetCommitBuilderService} from "../set-commit-builder.service";
-import {SetCommitBody} from "../models/set-commit-body";
+import {SetCommitBody, SetCommitBodySetScoreChange} from "../models/set-commit-body";
 import {SetView} from "../models/set-view";
+import {filter, firstValueFrom, lastValueFrom, shareReplay} from "rxjs";
 
 @Component({
   selector: 'app-set-view',
@@ -18,17 +19,19 @@ export class SetViewComponent implements OnInit {
 
   @Input() setId?: string;
 
-  lastMessage$ = this.setCommitService.messages$;
-  lastState$ = this.setCommitService.state$;
+  setState$ = this.setCommitService.messages$.pipe(
+    filter(x => x.header.setId.value == this.setId),
+    shareReplay({refCount: true, bufferSize: 1}),
+  );
+  connectionState$ = this.setCommitService.state$;
 
   ngOnInit(): void {
     this.setCommitService.start().then(() => {
       this.setCommitService.addSetWatch({value: this.setId!}).then(() => console.log("Subscribed"));
-
     });
   }
 
-  async sendUpdate() {
+  async sendNoOp() {
     if (!this.setId) return;
 
     let body: SetCommitBody = {type: 'NoOp'};
@@ -41,4 +44,20 @@ export class SetViewComponent implements OnInit {
     await this.setCommitService.push(commit);
   }
 
+  async increaseSetScore(side: 'home' | 'away') {
+    const setState = await firstValueFrom(this.setState$);
+    let view: SetView = setState.view;
+    view.gamesWon[side] += 1;
+    let previousCommitId = setState.header.commitId?.value;
+    let body: SetCommitBodySetScoreChange = {
+      type: 'SetScoreChange', setScoreDelta: {
+        home: side == 'home' ? 1 : 0,
+        away: side == 'away' ? 1 : 0,
+      }
+    };
+
+    const commit = await this.commitBuilder.create(this.setId!, body, view, previousCommitId);
+
+    await this.setCommitService.push(commit);
+  }
 }

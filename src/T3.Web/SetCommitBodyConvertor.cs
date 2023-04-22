@@ -23,10 +23,12 @@ public class SetCommitBodyConvertor : JsonConverter<SetCommitBody>
 
         var type = typeElement.GetString();
 
-        if (type == "NoOp")
-            return JsonSerializer.Deserialize<SetCommitBodyNoOp>(json.GetRawText(), options);
-        
-        throw new NotImplementedException("No converter for type: " + type);
+        return type switch
+        {
+            nameof(SetCommitBodyType.NoOp) => JsonSerializer.Deserialize<SetCommitBodyNoOp>(json.GetRawText(), options),
+            nameof(SetCommitBodyType.SetScoreChange) => JsonSerializer.Deserialize<SetCommitBodySetScoreChange>(json.GetRawText(), options),
+            _ => throw new NotImplementedException("No converter for type: " + type)
+        };
     }
 
     public override void Write(Utf8JsonWriter writer, SetCommitBody value, JsonSerializerOptions options)
