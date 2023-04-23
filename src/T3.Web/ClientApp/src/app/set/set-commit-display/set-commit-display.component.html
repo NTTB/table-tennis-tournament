@@ -1,16 +1,16 @@
 <h2>Header</h2>
 <table>
   <tr>
+    <th>SetId</th>
+    <td>{{header.setId.value}}</td>
+  </tr>
+  <tr>
     <th>Commit Id</th>
     <td>{{header.commitId.value}}</td>
   </tr>
   <tr>
     <th>Previous commit Id</th>
     <td>{{header.previousCommitId?.value}}</td>
-  </tr>
-  <tr>
-    <th>SetId</th>
-    <td>{{header.setId.value}}</td>
   </tr>
   <tr>
     <th>CreatedAt</th>
@@ -47,12 +47,9 @@
 </table>
 
 <h2>View</h2>
-<table>
-  <tr>
-    <th>SetScore</th>
-    <td>{{view.gamesWon.home}} - {{view.gamesWon.away}}</td>
-  </tr>
-</table>
+<code>
+  <pre>{{setCommit.view | json}}</pre>
+</code>
 
 <h2>Body</h2>
 <code>
