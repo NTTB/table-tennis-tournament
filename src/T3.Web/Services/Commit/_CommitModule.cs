@@ -8,13 +8,15 @@ public static class CommitModule
 {
     public static IServiceCollection AddCommitModule(this IServiceCollection collection)
     {
-        BsonClassMap.RegisterClassMap<SetCommitCommand>();
-        BsonClassMap.RegisterClassMap<NoOpCommand>();
-        BsonClassMap.RegisterClassMap<SetAwayPlayersCommand>();
-        BsonClassMap.RegisterClassMap<SetHomePlayersCommand>();
-        BsonClassMap.RegisterClassMap<SetInitialServiceCommand>();
-        BsonClassMap.RegisterClassMap<SetCurrentServiceCommand>();
-        BsonClassMap.RegisterClassMap<ChangeSetScoreCommand>();
+        var baseClassMap = BsonClassMap.RegisterClassMap<SetCommitCommand>();
+        baseClassMap.AutoMap();
+        
+        foreach (var type in SetCommitBodyTypes.GetTypes())
+        {
+            var explicitTypeMap = new BsonClassMap(type, baseClassMap);
+            explicitTypeMap.AutoMap();
+            BsonClassMap.RegisterClassMap(explicitTypeMap);
+        }
 
         return collection
             .AddDbCollection<SetCommit>("setCommits")

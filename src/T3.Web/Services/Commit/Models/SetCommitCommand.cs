@@ -10,7 +10,7 @@ public enum SetCommitBodyType
     SetAwayPlayers,
     SetCurrentService,
     SetInitialService,
-    SetScoreChange,
+    UpdateSetScore,
 }
 
 public abstract record SetCommitCommand
@@ -49,8 +49,8 @@ public record SetInitialServiceCommand : SetCommitCommand
     public PlayerId ReceivingPlayer { get; set; }
 }
 
-public record ChangeSetScoreCommand : SetCommitCommand
+public record UpdateSetScoreCommand : SetCommitCommand
 {
-    public override SetCommitBodyType Type => SetCommitBodyType.SetScoreChange;
-    public Score SetScoreDelta { get; set; }
+    public override SetCommitBodyType Type => SetCommitBodyType.UpdateSetScore;
+    public Score SetScore { get; set; }
 }

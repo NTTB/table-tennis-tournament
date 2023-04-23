@@ -24,17 +24,13 @@ public class SetCommitBodyConvertor : JsonConverter<SetCommitCommand>
         }
 
         var type = typeElement.GetString();
+        if (type == null) throw new Exception("TypeElement doesn't return a string");
 
-        return type switch
-        {
-            nameof(SetCommitBodyType.NoOp) => JsonSerializer.Deserialize<NoOpCommand>(json.GetRawText(), options),
-            nameof(SetCommitBodyType.SetHomePlayers) => JsonSerializer.Deserialize<SetHomePlayersCommand>(json.GetRawText(), options),
-            nameof(SetCommitBodyType.SetAwayPlayers) => JsonSerializer.Deserialize<SetAwayPlayersCommand>(json.GetRawText(), options),
-            nameof(SetCommitBodyType.SetInitialService) => JsonSerializer.Deserialize<SetInitialServiceCommand>(json.GetRawText(), options),
-            nameof(SetCommitBodyType.SetCurrentService) => JsonSerializer.Deserialize<SetCurrentServiceCommand>(json.GetRawText(), options),
-            nameof(SetCommitBodyType.SetScoreChange) => JsonSerializer.Deserialize<ChangeSetScoreCommand>(json.GetRawText(), options),
-            _ => throw new NotImplementedException("No converter for type: " + type)
-        };
+        if (SetCommitBodyTypes.TypeMap.ContainsKey(type) == false)
+            throw new NotImplementedException("No converter for type: " + type);
+
+        var targetType = SetCommitBodyTypes.TypeMap[type];
+        return JsonSerializer.Deserialize(json.GetRawText(), targetType, options) as SetCommitCommand;
     }
 
     public override void Write(Utf8JsonWriter writer, SetCommitCommand value, JsonSerializerOptions options)

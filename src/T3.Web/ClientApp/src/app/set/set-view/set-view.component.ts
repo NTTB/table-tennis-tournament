@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {SetCommitService} from "../set-commit.service";
 import {SetCommitBuilderService} from "../set-commit-builder.service";
-import {SetCommitCommand, ChangeSetScoreCommand} from "../models/set-commit-command";
+import {SetCommitCommand, UpdateSetScoreCommand} from "../models/set-commit-command";
 import {SetView} from "../models/set-view";
 import {filter, firstValueFrom, shareReplay} from "rxjs";
 import {PlayerView} from "../models/player-view";
@@ -112,10 +112,10 @@ export class SetViewComponent implements OnInit, OnDestroy {
     let view: SetView = setState.view;
     view.gamesWon[side] += 1;
     let previousCommitId = setState.header.commitId?.value;
-    let changeSetScoreCommand: ChangeSetScoreCommand = {
-      type: 'SetScoreChange', setScoreDelta: {
-        home: side == 'home' ? 1 : 0,
-        away: side == 'away' ? 1 : 0,
+    let changeSetScoreCommand: UpdateSetScoreCommand = {
+      type: 'UpdateSetScore', setScore: {
+        home: view.gamesWon['home'],
+        away: view.gamesWon['away'],
       }
     };
 

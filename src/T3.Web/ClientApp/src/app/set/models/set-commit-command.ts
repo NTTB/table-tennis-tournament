@@ -32,9 +32,9 @@ export interface SetCurrentServiceCommand extends TypedSetCommitCommand<'SetCurr
   receivingPlayer: PlayerId;
 }
 
-export interface ChangeSetScoreCommand extends TypedSetCommitCommand<'SetScoreChange'> {
-  type: 'SetScoreChange';
-  setScoreDelta: Score;
+export interface UpdateSetScoreCommand extends TypedSetCommitCommand<'UpdateSetScore'> {
+  type: 'UpdateSetScore';
+  setScore: Score;
 }
 
 export type SetCommitCommand = NoOpCommand
@@ -42,5 +42,5 @@ export type SetCommitCommand = NoOpCommand
   | SetAwayPlayersCommand
   | SetInitialServiceCommand
   | SetCurrentServiceCommand
-  | ChangeSetScoreCommand
+  | UpdateSetScoreCommand
   ;
