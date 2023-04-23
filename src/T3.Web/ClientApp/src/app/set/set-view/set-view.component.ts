@@ -1,16 +1,16 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {SetCommitService} from "../set-commit.service";
 import {SetCommitBuilderService} from "../set-commit-builder.service";
 import {SetCommitBody, SetCommitBodySetScoreChange} from "../models/set-commit-body";
 import {SetView} from "../models/set-view";
-import {filter, firstValueFrom, lastValueFrom, shareReplay} from "rxjs";
+import {filter, firstValueFrom, shareReplay} from "rxjs";
 
 @Component({
   selector: 'app-set-view',
   templateUrl: './set-view.component.html',
   styleUrls: ['./set-view.component.css']
 })
-export class SetViewComponent implements OnInit {
+export class SetViewComponent implements OnInit, OnDestroy {
   constructor(
     private readonly setCommitService: SetCommitService,
     private readonly commitBuilder: SetCommitBuilderService,
@@ -29,6 +29,10 @@ export class SetViewComponent implements OnInit {
     this.setCommitService.start().then(() => {
       this.setCommitService.addSetWatch({value: this.setId!}).then(() => console.log("Subscribed"));
     });
+  }
+
+  ngOnDestroy() {
+    this.setCommitService.removeSetWatch({value: this.setId!}).then(() => console.log("Unsubscribed"));
   }
 
   async sendNoOp() {
