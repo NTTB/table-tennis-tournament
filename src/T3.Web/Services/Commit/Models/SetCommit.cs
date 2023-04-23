@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace T3.Web.Services.Set.Models;
+namespace T3.Web.Services.Commit.Models;
 
-public class SetCommit
+public record SetCommit
 {
     // Note: Exist for MongoDB, but should not be send to the client.
     [JsonIgnore]

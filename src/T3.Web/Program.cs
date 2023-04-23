@@ -3,10 +3,12 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using T3.Web.Hubs;
+using T3.Web.Services.Commit;
 using T3.Web.Services.Data;
 using T3.Web.Services.Identity;
 using T3.Web.Services.Set;
 using T3.Web.Services.Shared;
+using T3.Web.Services.Timestamp;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -18,15 +20,16 @@ builder.Services
     .AddDataService(config)
     .AddIdentityServices(config)
     .AddSetModule()
+    .AddTimestampModule()
+    .AddCommitModule()
     .AddSignalR(options =>
     {
         options.EnableDetailedErrors = true;
-    }).AddJsonProtocol(x=>
+    }).AddJsonProtocol(options=>
     {
-        x.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        x.PayloadSerializerOptions.Converters.Add(new SetCommitBodyConvertor());
-    })
-    ;
+        options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.PayloadSerializerOptions.Converters.Add(new SetCommitBodyConvertor());
+    });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

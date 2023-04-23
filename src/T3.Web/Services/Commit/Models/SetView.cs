@@ -1,4 +1,4 @@
-namespace T3.Web.Services.Set.Models;
+namespace T3.Web.Services.Commit.Models;
 
 public record SetView
 {

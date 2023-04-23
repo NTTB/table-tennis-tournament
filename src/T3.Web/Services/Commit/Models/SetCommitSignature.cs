@@ -1,4 +1,4 @@
-namespace T3.Web.Services.Set.Models;
+namespace T3.Web.Services.Commit.Models;
 
 /// <summary>
 /// The signature contains the data that was signed and the public key of the signer.
@@ -25,12 +25,4 @@ public record SetCommitSignature
     /// This is so we can reject message before checking if the user is allowed to sign.
     /// </summary>
     public required string PublicKey { get; init; }
-}
-
-public enum SetCommitSignatureVersion
-{
-    /// <summary>
-    /// The Payload will contain a JSON-string of the <see cref="SetCommit"/> without the signature.
-    /// </summary>
-    V1,
 }

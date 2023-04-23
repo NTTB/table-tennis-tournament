@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using T3.Web.Services.Set.Models;
+using T3.Web.Services.Commit.Models;
+
+namespace T3.Web.Services.Commit;
 
 public class SetCommitBodyConvertor : JsonConverter<SetCommitBody>
 {

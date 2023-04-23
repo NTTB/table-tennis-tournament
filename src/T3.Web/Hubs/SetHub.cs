@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.SignalR;
+using T3.Web.Services.Commit;
+using T3.Web.Services.Commit.Models;
 using T3.Web.Services.Identity;
-using T3.Web.Services.Set;
-using T3.Web.Services.Set.Models;
+using T3.Web.Services.Set.ValueObjects;
 
 namespace T3.Web.Hubs;
 

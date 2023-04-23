@@ -1,6 +1,5 @@
-using MongoDB.Bson.Serialization.Attributes;
+namespace T3.Web.Services.Commit.Models;
 
-namespace T3.Web.Services.Set.Models;
 public enum SetCommitBodyType
 {
     Invalid,
@@ -8,17 +7,17 @@ public enum SetCommitBodyType
     SetScoreChange,
 }
 
-public abstract class SetCommitBody
+public abstract record SetCommitBody
 {
     public virtual SetCommitBodyType Type { get; }
 }
 
-public class SetCommitBodyNoOp : SetCommitBody
+public record SetCommitBodyNoOp : SetCommitBody
 {
     public override SetCommitBodyType Type => SetCommitBodyType.NoOp;
 }
 
-public class SetCommitBodySetScoreChange : SetCommitBody
+public record SetCommitBodySetScoreChange : SetCommitBody
 {
     public override SetCommitBodyType Type => SetCommitBodyType.SetScoreChange;
     public Score SetScoreDelta { get; set; }

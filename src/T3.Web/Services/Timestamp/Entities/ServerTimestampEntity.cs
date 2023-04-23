@@ -1,6 +1,6 @@
-using T3.Web.Services.Set.Models;
+using T3.Web.Services.Timestamp.Models;
 
-namespace T3.Web.Services.Set.Entities;
+namespace T3.Web.Services.Timestamp.Entities;
 
 public record ServerTimestampEntity : ServerTimestamp
 {

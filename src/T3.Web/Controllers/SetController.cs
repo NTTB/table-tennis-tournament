@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using T3.Web.Services.Commit;
+using T3.Web.Services.Commit.Models;
 using T3.Web.Services.Set;
 using T3.Web.Services.Set.Entities;
-using T3.Web.Services.Set.Models;
+using T3.Web.Services.Set.ValueObjects;
 
 namespace T3.Web.Controllers;
 

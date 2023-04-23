@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using T3.Web.Services.Set;
-using T3.Web.Services.Set.Models;
+using T3.Web.Services.Timestamp;
+using T3.Web.Services.Timestamp.Models;
 
 namespace T3.Web.Controllers;
 
@@ -20,8 +20,7 @@ public class TimestampController
     [HttpPost("latest")]
     public async Task<ServerTimestamp> CreateAndGetLatest()
     {
-        await _timestampService.EnsureRecentTimestamp();
-        var latest = await _timestampService.GetLatest();
+        var latest = await _timestampService.CreateNew();
         return new ServerTimestamp
         {
             Year = latest.Year,
