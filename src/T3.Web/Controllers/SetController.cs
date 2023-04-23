@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using T3.Web.Services.Commit;
-using T3.Web.Services.Commit.Models;
 using T3.Web.Services.Set;
 using T3.Web.Services.Set.Entities;
-using T3.Web.Services.Set.ValueObjects;
 
 namespace T3.Web.Controllers;
 
@@ -12,15 +9,12 @@ namespace T3.Web.Controllers;
 public class SetController : ControllerBase
 {
     private readonly ISetService _setService;
-    private readonly ISetCommitService _setCommitService;
 
     public SetController(
-        ISetService setService,
-        ISetCommitService setCommitService
+        ISetService setService
     )
     {
         _setService = setService;
-        _setCommitService = setCommitService;
     }
     
     [HttpGet("")]
@@ -34,14 +28,7 @@ public class SetController : ControllerBase
     {
         return await _setService.GetById(id);
     }
-    
-    [HttpGet("{id}/commits")]
-    public async Task<IEnumerable<SetCommit>> GetCommits(Guid id)
-    {
-        // NOTE: This function is not intended to be used by application for polling, so we will likely remove it.
-        return await _setCommitService.GetAll(new SetId(id));
-    }
-    
+
     [HttpDelete("{id}")]
     public async Task Delete(Guid id)
     {
