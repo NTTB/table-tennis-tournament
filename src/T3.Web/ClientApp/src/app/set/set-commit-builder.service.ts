@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {SetCommitAuthor} from "./models/set-commit-author";
 import {SetCommit} from "./models/set-commit";
-import {SetCommitBody} from "./models/set-commit-body";
+import {SetCommitCommand} from "./models/set-commit-command";
 import {SetView} from "./models/set-view";
 import {v4 as uuidv4} from 'uuid';
 import {TimestampService} from "./timestamp.service";
@@ -65,11 +65,11 @@ export class SetCommitBuilderService {
     return this._author;
   }
 
-  async create(setId: string, body: SetCommitBody, view: SetView, previousCommitId?: string): Promise<SetCommit> {
+  async create(setId: string, commands: SetCommitCommand[], view: SetView, previousCommitId?: string): Promise<SetCommit> {
 
     const commitWithoutSignature: Omit<SetCommit, 'signature'> = {
       view,
-      body,
+      commands,
       header: {
         author: this.author,
         commitId: {value: uuidv4()},

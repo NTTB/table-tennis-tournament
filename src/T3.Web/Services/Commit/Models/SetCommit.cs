@@ -9,7 +9,7 @@ public record SetCommit
     public MongoDB.Bson.ObjectId _id { get; set; }
     
     public SetCommitHeader Header { get; set; }
-    public SetCommitBody Body { get; set; }
+    public SetCommitCommand[] Commands { get; set; }
     
     /// <summary>
     /// The view after this commit was applied.

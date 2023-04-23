@@ -18,7 +18,6 @@ export class SetCommitDisplayComponent implements OnInit {
   get author() { return this.header.author; }
   get clientApp() { return this.author.clientApp; }
 
-  get body() { return this.setCommit.body; }
   get view() { return this.setCommit.view; }
 
   get createdAtDateTime() {

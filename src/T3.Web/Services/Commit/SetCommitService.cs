@@ -162,9 +162,13 @@ public class SetCommitService : ISetCommitService
                 foreach (var ar in obj) FillValuesDictionary(path + "." + ar.Name, dictionary, ar.Value);
                 break;
             case JsonValueKind.Array:
-                var array = element.EnumerateArray();
-                var index = 0;
-                foreach (var ar in array) FillValuesDictionary(path + "[" + index + "]", dictionary, ar);
+                var array = element.EnumerateArray().ToArray();
+                for (var i = 0; i < array.Length; i++)
+                {
+                    var ar = array[i];
+                    FillValuesDictionary(path + "[" + i + "]", dictionary, ar);
+                }
+
                 break;
             case JsonValueKind.String:
                 dictionary.Add(path, element.GetString());

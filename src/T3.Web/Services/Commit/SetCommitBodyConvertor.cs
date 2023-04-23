@@ -4,14 +4,14 @@ using T3.Web.Services.Commit.Models;
 
 namespace T3.Web.Services.Commit;
 
-public class SetCommitBodyConvertor : JsonConverter<SetCommitBody>
+public class SetCommitBodyConvertor : JsonConverter<SetCommitCommand>
 {
     public override bool CanConvert(Type typeToConvert)
     {
-        return typeToConvert == (typeof(SetCommitBody));
+        return typeToConvert == (typeof(SetCommitCommand));
     }
 
-    public override SetCommitBody? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override SetCommitCommand? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
         JsonElement typeElement;
@@ -27,13 +27,17 @@ public class SetCommitBodyConvertor : JsonConverter<SetCommitBody>
 
         return type switch
         {
-            nameof(SetCommitBodyType.NoOp) => JsonSerializer.Deserialize<SetCommitBodyNoOp>(json.GetRawText(), options),
-            nameof(SetCommitBodyType.SetScoreChange) => JsonSerializer.Deserialize<SetCommitBodySetScoreChange>(json.GetRawText(), options),
+            nameof(SetCommitBodyType.NoOp) => JsonSerializer.Deserialize<NoOpCommand>(json.GetRawText(), options),
+            nameof(SetCommitBodyType.SetHomePlayers) => JsonSerializer.Deserialize<SetHomePlayersCommand>(json.GetRawText(), options),
+            nameof(SetCommitBodyType.SetAwayPlayers) => JsonSerializer.Deserialize<SetAwayPlayersCommand>(json.GetRawText(), options),
+            nameof(SetCommitBodyType.SetInitialService) => JsonSerializer.Deserialize<SetInitialServiceCommand>(json.GetRawText(), options),
+            nameof(SetCommitBodyType.SetCurrentService) => JsonSerializer.Deserialize<SetCurrentServiceCommand>(json.GetRawText(), options),
+            nameof(SetCommitBodyType.SetScoreChange) => JsonSerializer.Deserialize<ChangeSetScoreCommand>(json.GetRawText(), options),
             _ => throw new NotImplementedException("No converter for type: " + type)
         };
     }
 
-    public override void Write(Utf8JsonWriter writer, SetCommitBody value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, SetCommitCommand value, JsonSerializerOptions options)
     {
         JsonSerializer.Serialize(writer, value, value.GetType(), options);
     }
