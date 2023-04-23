@@ -81,7 +81,6 @@ app.MapControllerRoute(
     "default",
     "{controller}/{action=Index}/{id?}");
 
-app.MapHub<ChatHub>("/hubs/chat");
 app.MapHub<SetHub>("/hubs/set");
 
 app.MapFallbackToFile("index.html");

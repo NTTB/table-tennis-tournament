@@ -5,7 +5,6 @@ import {PageCreateAccountComponent} from "./page-create-account/page-create-acco
 import {PageLoginComponent} from "./page-login/page-login.component";
 import {PageSetCreateComponent} from "./page-set-create/page-set-create.component";
 import {PageSetListComponent} from "./page-set-list/page-set-list.component";
-import {PageChatComponent} from "./page-chat/page-chat.component";
 import {PageSetViewComponent} from "./page-set-view/page-set-view.component";
 import {PageAccountKeysComponent} from "./page-account-keys/page-account-keys.component";
 import {PageLoginPostComponent} from "./page-login-post/page-login-post.component";
@@ -27,6 +26,5 @@ export const userRoutes: Routes = [
   {path: 'sets/create', component: PageSetCreateComponent},
   {path: 'sets/:id', component: PageSetViewComponent},
 
-  {path: 'chat', component: PageChatComponent},
   // { path: '**', component: PageContentComponent },
 ];
