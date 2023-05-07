@@ -46,6 +46,7 @@ export class SetViewComponent implements OnInit, OnDestroy {
       homePlayers: [],
       awayPlayers: [],
       games: [],
+      setWatches: [],
     };
 
     const commit = await this.commitBuilder.create(this.setId, [noOpCommand], view, undefined);
@@ -70,12 +71,14 @@ export class SetViewComponent implements OnInit, OnDestroy {
           initialReceiver: rutger.playerId,
           currentServer: wouter.playerId,
           currentReceiver: rutger.playerId,
-          points: {home: 0, away: 0}
+          points: {home: 0, away: 0},
+          watches: [],
         }
       ],
       homePlayers: [wouter],
       awayPlayers: [rutger],
       gamesWon: {home: 0, away: 0},
+      setWatches: [],
     };
 
     let setHomePlayersCommand: SetCommitCommand = {
@@ -167,7 +170,8 @@ export class SetViewComponent implements OnInit, OnDestroy {
       initialReceiver: nextReceiver,
       currentServer: nextServer,
       currentReceiver: nextReceiver,
-      points: {home: 0, away: 0}
+      points: {home: 0, away: 0},
+      watches: [],
     });
 
     const commit = await this.commitBuilder.create(this.setId!, [addGameCommand, setInitialServerCommand, setCurrentServerCommand], view, previousCommitId);

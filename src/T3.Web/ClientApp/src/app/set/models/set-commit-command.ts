@@ -1,6 +1,8 @@
 import {Score} from "./score";
-import {PlayerId} from "./typed-ids";
+import {PlayerId, WatchId} from "./typed-ids";
 import {PlayerView} from "./player-view";
+import {Timestamp} from "./timestamp";
+import {WatchState} from "./set-view";
 
 interface TypedSetCommitCommand<T extends string> {
   type: T;
@@ -49,6 +51,25 @@ export interface AddGameCommand extends TypedSetCommitCommand<'AddGame'> {
   type: 'AddGame';
   position: number; // The position in the list of games where the new game should be inserted 0 = first, 1 = second, etc.
   amount: number; // The amount of games to add
+}
+
+export interface AddWatchCommand extends TypedSetCommitCommand<'AddWatch'> {
+  type: 'AddWatch';
+  watchId: WatchId;
+  gameIndex?: number;
+  key: string;
+  maxMilliseconds?: number;
+}
+export interface UpdateWatchCommand extends TypedSetCommitCommand<'UpdateWatch'> {
+  type: 'UpdateWatch';
+  watchId: WatchId;
+  timestamp: Timestamp;
+  newState: WatchState;
+}
+
+export interface RemoveWatchCommand extends TypedSetCommitCommand<'RemoveWatch'> {
+  type: 'RemoveWatch';
+  watchId: WatchId;
 }
 
 export type SetCommitCommand = NoOpCommand

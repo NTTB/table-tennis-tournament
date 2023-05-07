@@ -17,6 +17,9 @@ public static class SetCommitBodyTypes
         {nameof(SetCommitBodyType.UpdateSetScore), typeof(UpdateSetScoreCommand)},
         {nameof(SetCommitBodyType.UpdateGameScore), typeof(UpdateGameScoreCommand)},
         {nameof(SetCommitBodyType.AddGame), typeof(AddGameCommand)},
+        {nameof(SetCommitBodyType.AddWatch), typeof(AddWatchCommand)},
+        {nameof(SetCommitBodyType.UpdateWatch), typeof(UpdateWatchCommand)},
+        {nameof(SetCommitBodyType.RemoveWatch), typeof(RemoveWatchCommand)},
     };
 
     static SetCommitBodyTypes()

@@ -18,4 +18,9 @@ public record SetView
     /// The games in this set.
     /// </summary>
     public required GameView[] Games { get; init; }
+    
+    /// <summary>
+    /// The watches in the current set. They are not part of any game.
+    /// </summary>
+    public required WatchView[] SetWatches { get; init; }
 }
