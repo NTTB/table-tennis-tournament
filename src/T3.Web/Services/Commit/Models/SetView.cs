@@ -14,16 +14,8 @@ public record SetView
     /// </summary>
     public required PlayerView[] AwayPlayers { get; init; }
     
-    public PlayerView? CurrentServer { get; init; }
-    public PlayerView? CurrentReceiver { get; init; }
-    
     /// <summary>
-    /// Who served first in this set.
+    /// The games in this set.
     /// </summary>
-    public PlayerView? InitialServer { get; init; }
-    
-    /// <summary>
-    /// Who received first in this set.
-    /// </summary>
-    public PlayerView? InitialReceiver { get; init; }
+    public required GameView[] Games { get; init; }
 }

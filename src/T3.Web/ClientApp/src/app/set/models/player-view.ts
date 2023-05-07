@@ -1,6 +1,6 @@
 import {PlayerId} from "./typed-ids";
 
-export interface PlayerView{
+export interface PlayerView {
   playerId: PlayerId;
   displayName: string;
 }

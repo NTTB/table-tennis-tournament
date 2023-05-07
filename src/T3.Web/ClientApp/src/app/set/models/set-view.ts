@@ -1,5 +1,6 @@
 import {Score} from "./score";
 import {PlayerView} from "./player-view";
+import {PlayerId} from "./typed-ids";
 
 export interface SetView {
   gamesWon: Score;
@@ -7,9 +8,16 @@ export interface SetView {
   homePlayers: PlayerView[];
   awayPlayers: PlayerView[];
 
-  currentServer?: PlayerView;
-  currentReceiver?: PlayerView;
-
-  initialServer?: PlayerView;
-  initialReceiver?: PlayerView;
+  games: GameView[];
 }
+
+export interface GameView {
+  initialServer?: PlayerId;
+  initialReceiver?: PlayerId;
+
+  currentServer?: PlayerId;
+  currentReceiver?: PlayerId;
+
+  points: Score;
+}
+

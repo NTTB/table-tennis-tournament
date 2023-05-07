@@ -12,9 +12,11 @@ public static class SetCommitBodyTypes
         {nameof(SetCommitBodyType.NoOp), typeof(NoOpCommand)},
         {nameof(SetCommitBodyType.SetHomePlayers), typeof(SetHomePlayersCommand)},
         {nameof(SetCommitBodyType.SetAwayPlayers), typeof(SetAwayPlayersCommand)},
-        {nameof(SetCommitBodyType.SetInitialService), typeof(SetInitialServiceCommand)},
-        {nameof(SetCommitBodyType.SetCurrentService), typeof(SetCurrentServiceCommand)},
+        {nameof(SetCommitBodyType.SetInitialServer), typeof(SetInitialServerCommand)},
+        {nameof(SetCommitBodyType.SetCurrentServer), typeof(SetCurrentServerCommand)},
         {nameof(SetCommitBodyType.UpdateSetScore), typeof(UpdateSetScoreCommand)},
+        {nameof(SetCommitBodyType.UpdateGameScore), typeof(UpdateGameScoreCommand)},
+        {nameof(SetCommitBodyType.AddGame), typeof(AddGameCommand)},
     };
 
     static SetCommitBodyTypes()

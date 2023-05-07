@@ -20,27 +20,43 @@ export interface SetAwayPlayersCommand extends TypedSetCommitCommand<'SetAwayPla
   awayPlayers: PlayerView[];
 }
 
-export interface SetInitialServiceCommand extends TypedSetCommitCommand<'SetInitialService'> {
-  type: 'SetInitialService';
-  servingPlayer: PlayerId;
-  receivingPlayer: PlayerId;
-}
-
-export interface SetCurrentServiceCommand extends TypedSetCommitCommand<'SetCurrentService'> {
-  type: 'SetCurrentService';
-  servingPlayer: PlayerId;
-  receivingPlayer: PlayerId;
-}
-
 export interface UpdateSetScoreCommand extends TypedSetCommitCommand<'UpdateSetScore'> {
   type: 'UpdateSetScore';
   setScore: Score;
 }
 
+export interface SetInitialServerCommand extends TypedSetCommitCommand<'SetInitialServer'> {
+  type: 'SetInitialServer';
+  gameIndex: number;
+  servingPlayer: PlayerId;
+  receivingPlayer: PlayerId;
+}
+
+export interface SetCurrentServerCommand extends TypedSetCommitCommand<'SetCurrentServer'> {
+  type: 'SetCurrentServer';
+  gameIndex: number;
+  servingPlayer: PlayerId;
+  receivingPlayer: PlayerId;
+}
+
+export interface UpdateGameScoreCommand extends TypedSetCommitCommand<'UpdateGameScore'> {
+  type: 'UpdateGameScore';
+  gameIndex: number;
+  gameScore: Score;
+}
+
+export interface AddGameCommand extends TypedSetCommitCommand<'AddGame'> {
+  type: 'AddGame';
+  position: number; // The position in the list of games where the new game should be inserted 0 = first, 1 = second, etc.
+  amount: number; // The amount of games to add
+}
+
 export type SetCommitCommand = NoOpCommand
   | SetHomePlayersCommand
   | SetAwayPlayersCommand
-  | SetInitialServiceCommand
-  | SetCurrentServiceCommand
   | UpdateSetScoreCommand
+  | SetInitialServerCommand
+  | SetCurrentServerCommand
+  | UpdateGameScoreCommand
+  | AddGameCommand
   ;

@@ -25,7 +25,7 @@ public class SetCommitService : ISetCommitService
 
     public SetCommitService(
         ILogger<SetCommitService> logger,
-        IMongoCollection<SetCommit> collection, 
+        IMongoCollection<SetCommit> collection,
         IAccountPublicKeyService accountPublicKeyService, ITimestampService timestampService)
     {
         _logger = logger;
@@ -79,14 +79,15 @@ public class SetCommitService : ISetCommitService
 
     private void ValidatePayload(SetCommit commit)
     {
-        var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web) {
+        var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        {
             Converters =
             {
                 new JsonStringEnumConverter(),
                 new SetCommitBodyConvertor()
             }
         };
-        
+
         var commitElement = JsonSerializer.SerializeToElement(commit, jsonSerializerOptions);
         var verifyElement = JsonSerializer.Deserialize<JsonElement>(commit.Signature.Payload);
 
@@ -103,7 +104,7 @@ public class SetCommitService : ISetCommitService
             {
                 path = verifyKp.Key,
                 commitValue = commitValues[verifyKp.Key],
-                verifyValue = verifyKp.Value,
+                proofValue = verifyKp.Value,
                 areEqual = object.Equals(commitValues[verifyKp.Key], verifyKp.Value)
             })
             .Where(x => !x.areEqual)
@@ -112,6 +113,19 @@ public class SetCommitService : ISetCommitService
 
         if (missingKeys.Any() || invalidValues.Any())
         {
+            using (var scope = _logger.BeginScope("Payload signature does not match the commit"))
+            {
+                foreach (var key in missingKeys)
+                {
+                    _logger.LogTrace("Missing key: {Key}", key);
+                }
+
+                foreach (var invalidValue in invalidValues)
+                {
+                    _logger.LogTrace("Invalid value: {Path}, in commit: {CommitValue}, in proof: {ProofValue}", invalidValue.path, invalidValue.commitValue, invalidValue.proofValue);
+                }
+            }
+
             throw new Exception("Payload signature does not match the commit")
             {
                 Data =
@@ -121,7 +135,7 @@ public class SetCommitService : ISetCommitService
                 }
             };
         }
-        
+
         // Signature must proof:
         // - Author (Since afterwards we should be able to tell who the author is)
         // - CommitId (Since we should be able to tell if the commit is a duplicate)
@@ -130,7 +144,6 @@ public class SetCommitService : ISetCommitService
         // The payload should provide more values.
         string[] requiredPaths = new[]
         {
-            
             ".header.author.userId.value",
             ".header.commitId.value",
             ".header.setId.value",
@@ -142,7 +155,7 @@ public class SetCommitService : ISetCommitService
         };
 
         var missingPaths = requiredPaths.Where(x => !verifyValues.ContainsKey(x));
-        
+
         if (missingPaths.Any())
             throw new Exception("Payload signature must proof author id")
             {
