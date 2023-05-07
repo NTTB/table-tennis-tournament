@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "../shared/api.service";
+import {CommitId} from "./models/typed-ids";
 
 export interface SetEntity {
   id: string; // Guid
@@ -34,5 +35,9 @@ export class SetApiService {
 
   delete(id: string) {
     return this.api.delete(`api/set/${id}`);
+  }
+
+  validate(id: CommitId) {
+    return this.api.post(`api/set/${id.value}/validate`, null);
   }
 }

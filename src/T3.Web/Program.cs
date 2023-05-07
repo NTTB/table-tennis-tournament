@@ -7,6 +7,7 @@ using T3.Web.Services.Commit;
 using T3.Web.Services.Data;
 using T3.Web.Services.Identity;
 using T3.Web.Services.Set;
+using T3.Web.Services.SetValidation;
 using T3.Web.Services.Shared;
 using T3.Web.Services.Timestamp;
 
@@ -20,6 +21,7 @@ builder.Services
     .AddDataService(config)
     .AddIdentityServices(config)
     .AddSetModule()
+    .AddSetValidationModule()
     .AddTimestampModule()
     .AddCommitModule()
     .AddSignalR(options =>

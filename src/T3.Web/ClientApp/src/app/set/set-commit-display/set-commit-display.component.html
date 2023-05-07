@@ -55,3 +55,9 @@
 <code>
   <pre>{{setCommit.commands | json}}</pre>
 </code>
+
+<h2>Validation</h2>
+<button (click)="onValidateClick()">Validate last commit</button>
+<code *ngIf="validationResult">
+  <pre>{{validationResult | json}}</pre>
+</code>

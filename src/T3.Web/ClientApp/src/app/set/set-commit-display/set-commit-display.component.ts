@@ -1,6 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {SetCommit} from "../models/set-commit";
 import { addDays, addMilliseconds, format } from 'date-fns';
+import {firstValueFrom} from "rxjs";
+import {SetCommitApiService, SetCommitValidationResult} from "../set-commit-api.service";
 
 /**
  * Shows a set commit in a human readable way.
@@ -13,6 +15,7 @@ import { addDays, addMilliseconds, format } from 'date-fns';
 export class SetCommitDisplayComponent implements OnInit {
   @Input()
   setCommit!: SetCommit;
+  validationResult?: SetCommitValidationResult;
 
   get header() { return this.setCommit.header; }
   get author() { return this.header.author; }
@@ -30,9 +33,14 @@ export class SetCommitDisplayComponent implements OnInit {
     return new Date(str+ '+0000');
   }
 
-  constructor() { }
+  constructor(
+    private readonly setCommitApiService: SetCommitApiService,
+  ) { }
 
   ngOnInit(): void {
   }
 
+  async onValidateClick() {
+    this.validationResult = await firstValueFrom(this.setCommitApiService.validate(this.setCommit.header.commitId));
+  }
 }

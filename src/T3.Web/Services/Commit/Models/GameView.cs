@@ -6,9 +6,9 @@ public record GameView
 {
     public PlayerId? InitialServer { get; init; }
     public PlayerId? InitialReceiver { get; init; }
-    
+
     public PlayerId? CurrentServer { get; init; }
     public PlayerId? CurrentReceiver { get; init; }
-    
-    public Score Points { get; init; }
+
+    public Score Points { get; init; } = Score.CreateZero();
 }

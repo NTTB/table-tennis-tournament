@@ -8,8 +8,8 @@ public static class SetModule
     public static IServiceCollection AddSetModule(this IServiceCollection collection)
     {
         return collection
-            .AddDbCollection<SetEntity>("sets")
-            .AddScoped<ISetService, SetService>()
+                .AddDbCollection<SetEntity>("sets")
+                .AddScoped<ISetService, SetService>()
             ;
     }
 }

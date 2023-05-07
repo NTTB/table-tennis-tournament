@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using T3.Web.Services.Commit.Models;
+using T3.Web.Services.Commit.ValueObjects;
 using T3.Web.Services.Identity;
 using T3.Web.Services.Set.ValueObjects;
 using T3.Web.Services.Timestamp;
@@ -13,6 +14,7 @@ namespace T3.Web.Services.Commit;
 public interface ISetCommitService
 {
     Task<IEnumerable<SetCommit>> GetAll(SetId setId);
+    Task<SetCommit> GetById(CommitId commitId);
     Task Add(SetCommit commit);
 }
 
@@ -37,6 +39,11 @@ public class SetCommitService : ISetCommitService
     public async Task<IEnumerable<SetCommit>> GetAll(SetId setId)
     {
         return await _collection.Find(x => x.Header.SetId.Value == setId.Value).ToListAsync();
+    }
+
+    public async Task<SetCommit> GetById(CommitId commitId)
+    {
+        return await _collection.Find(x => x.Header.CommitId.Value == commitId.Value).SingleAsync();
     }
 
     public async Task Add(SetCommit commit)
