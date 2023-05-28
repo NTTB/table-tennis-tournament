@@ -47,6 +47,7 @@ export class SetViewComponent implements OnInit, OnDestroy {
       awayPlayers: [],
       games: [],
       setWatches: [],
+      penaltyEvents: []
     };
 
     const commit = await this.commitBuilder.create(this.setId, [noOpCommand], view, undefined);
@@ -79,6 +80,7 @@ export class SetViewComponent implements OnInit, OnDestroy {
       awayPlayers: [rutger],
       gamesWon: {home: 0, away: 0},
       setWatches: [],
+      penaltyEvents: []
     };
 
     let setHomePlayersCommand: SetCommitCommand = {
