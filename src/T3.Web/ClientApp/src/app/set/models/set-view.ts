@@ -41,6 +41,7 @@ export interface WatchChange {
 
 export interface PenaltyEvent {
   penaltyEventId: PenaltyEventId;
+  timestamp: Timestamp;
   playerId: PlayerId;
   penaltyCard: PenaltyCard;
   offenses: Offense[];

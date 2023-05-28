@@ -77,6 +77,11 @@ export interface AddPenaltyEventCommand extends TypedSetCommitCommand<'AddPenalt
   penaltyEvent: PenaltyEvent;
 }
 
+export interface UpdatePenaltyEventCommand extends TypedSetCommitCommand<'UpdatePenaltyEvent'> {
+  type: 'UpdatePenaltyEvent';
+  penaltyEvent: PenaltyEvent;
+}
+
 export interface RemovePenaltyEventCommand extends TypedSetCommitCommand<'RemovePenaltyEvent'> {
   type: 'RemovePenaltyEvent';
   penaltyEventId: PenaltyEventId;
@@ -94,5 +99,6 @@ export type SetCommitCommand = NoOpCommand
   | UpdateWatchCommand
   | RemoveWatchCommand
   | AddPenaltyEventCommand
+  | UpdatePenaltyEventCommand
   | RemovePenaltyEventCommand
   ;

@@ -59,6 +59,7 @@ public class SetCommitValidateService : ISetCommitValidateService
             Games = Array.Empty<GameView>(),
             SetWatches = Array.Empty<WatchView>(),
             PenaltyEvents = Array.Empty<PenaltyEvent>()
+            
         };
 
         foreach (var commit in commits)
@@ -93,6 +94,7 @@ public class SetCommitValidateService : ISetCommitValidateService
                 UpdateWatchCommand updateWatchCommand => await ApplyCommand(view, updateWatchCommand),
                 RemoveWatchCommand removeWatchCommand => ApplyCommand(view, removeWatchCommand),
                 AddPenaltyEventCommand addPenaltyEventCommand => ApplyCommand(view, addPenaltyEventCommand),
+                UpdatePenaltyEventCommand updatePenaltyEventCommand => ApplyCommand(view, updatePenaltyEventCommand),
                 RemovePenaltyEventCommand removePenaltyEventCommand => ApplyCommand(view, removePenaltyEventCommand),
                 _ => throw new Exception("Unable to apply command: " + command.GetType().FullName)
             };
@@ -108,6 +110,18 @@ public class SetCommitValidateService : ISetCommitValidateService
         return view with { PenaltyEvents = penaltyEvents.ToArray() };
     }
 
+    private SetView ApplyCommand(SetView view, UpdatePenaltyEventCommand command)
+    {
+        if(view.PenaltyEvents.All(x => x.PenaltyEventId != command.PenaltyEvent.PenaltyEventId))
+            throw new Exception("Penalty event doesn't exists in set");
+        
+        // Replace penalty event
+        var penaltyEvents = view.PenaltyEvents.ToList();
+        var index= penaltyEvents.FindIndex(x=>x.PenaltyEventId == command.PenaltyEvent.PenaltyEventId);
+        penaltyEvents[index] = command.PenaltyEvent; 
+        return view with { PenaltyEvents = penaltyEvents.ToArray() };
+    }
+    
     private SetView ApplyCommand(SetView view, AddPenaltyEventCommand command)
     {
         if(view.PenaltyEvents.Any(x=>x.PenaltyEventId == command.PenaltyEvent.PenaltyEventId))

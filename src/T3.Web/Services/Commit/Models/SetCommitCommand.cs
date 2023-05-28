@@ -23,7 +23,12 @@ public enum SetCommitBodyType
     /// Adds a new penalty event to the set.
     /// </summary>
     AddPenaltyEvent,
-
+    
+    /// <summary>
+    /// Updates an existing penalty event in the set.
+    /// </summary>
+    UpdatePenaltyEvent,
+    
     /// <summary>
     /// Removes an penalty event from the set.
     /// </summary>
@@ -128,6 +133,12 @@ public record RemoveWatchCommand : SetCommitCommand
 public record AddPenaltyEventCommand : SetCommitCommand
 {
     public override SetCommitBodyType Type => SetCommitBodyType.AddPenaltyEvent;
+    public PenaltyEvent PenaltyEvent { get; set; }
+}
+
+public record UpdatePenaltyEventCommand : SetCommitCommand
+{
+    public override SetCommitBodyType Type => SetCommitBodyType.UpdatePenaltyEvent;
     public PenaltyEvent PenaltyEvent { get; set; }
 }
 

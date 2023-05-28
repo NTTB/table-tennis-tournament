@@ -16,6 +16,11 @@ public record PenaltyEvent
     public required PenaltyEventId PenaltyEventId { get; init; }
 
     /// <summary>
+    ///     When the penalty event occured.
+    /// </summary>
+    public required Timestamp.Models.Timestamp Timestamp { get; init; }
+
+    /// <summary>
     ///     To who the card was assigned.
     /// </summary>
     public required PlayerId PlayerId { get; init; }
