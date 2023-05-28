@@ -1,8 +1,8 @@
 import {Score} from "./score";
-import {PlayerId, WatchId} from "./typed-ids";
+import {PenaltyEventId, PlayerId, WatchId} from "./typed-ids";
 import {PlayerView} from "./player-view";
 import {Timestamp} from "./timestamp";
-import {WatchState} from "./set-view";
+import {PenaltyEvent, WatchState} from "./set-view";
 
 interface TypedSetCommitCommand<T extends string> {
   type: T;
@@ -72,6 +72,16 @@ export interface RemoveWatchCommand extends TypedSetCommitCommand<'RemoveWatch'>
   watchId: WatchId;
 }
 
+export interface AddPenaltyEventCommand extends TypedSetCommitCommand<'AddPenaltyEvent'> {
+  type: 'AddPenaltyEvent';
+  penaltyEvent: PenaltyEvent;
+}
+
+export interface RemovePenaltyEventCommand extends TypedSetCommitCommand<'RemovePenaltyEvent'> {
+  type: 'RemovePenaltyEvent';
+  penaltyEventId: PenaltyEventId;
+}
+
 export type SetCommitCommand = NoOpCommand
   | SetHomePlayersCommand
   | SetAwayPlayersCommand
@@ -80,4 +90,9 @@ export type SetCommitCommand = NoOpCommand
   | SetCurrentServerCommand
   | UpdateGameScoreCommand
   | AddGameCommand
+  | AddWatchCommand
+  | UpdateWatchCommand
+  | RemoveWatchCommand
+  | AddPenaltyEventCommand
+  | RemovePenaltyEventCommand
   ;

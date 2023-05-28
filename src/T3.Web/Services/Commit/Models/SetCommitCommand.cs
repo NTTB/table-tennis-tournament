@@ -18,6 +18,16 @@ public enum SetCommitBodyType
     AddWatch,
     UpdateWatch,
     RemoveWatch,
+    
+    /// <summary>
+    /// Adds a new penalty event to the set.
+    /// </summary>
+    AddPenaltyEvent,
+
+    /// <summary>
+    /// Removes an penalty event from the set.
+    /// </summary>
+    RemovePenaltyEvent,
 }
 
 public abstract record SetCommitCommand
@@ -113,4 +123,16 @@ public record RemoveWatchCommand : SetCommitCommand
 {
     public override SetCommitBodyType Type => SetCommitBodyType.RemoveWatch;
     public WatchId WatchId { get; set; }
+}
+
+public record AddPenaltyEventCommand : SetCommitCommand
+{
+    public override SetCommitBodyType Type => SetCommitBodyType.AddPenaltyEvent;
+    public PenaltyEvent PenaltyEvent { get; set; }
+}
+
+public record RemovePenaltyEventCommand : SetCommitCommand
+{
+    public override SetCommitBodyType Type => SetCommitBodyType.RemovePenaltyEvent;
+    public PenaltyEventId PenaltyEventId { get; set; }
 }

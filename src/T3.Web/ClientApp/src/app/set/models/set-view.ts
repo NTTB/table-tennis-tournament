@@ -1,6 +1,6 @@
 import {Score} from "./score";
 import {PlayerView} from "./player-view";
-import {PlayerId, WatchId} from "./typed-ids";
+import {PenaltyEventId, PlayerId, WatchId} from "./typed-ids";
 import {Timestamp} from "./timestamp";
 
 export interface SetView {
@@ -12,6 +12,8 @@ export interface SetView {
   games: GameView[];
 
   setWatches: WatchView[];
+
+  penaltyEvents: PenaltyEvent[];
 }
 
 export interface GameView {
@@ -37,4 +39,27 @@ export interface WatchChange {
   timestamp: Timestamp;
 }
 
+export interface PenaltyEvent {
+  penaltyEventId: PenaltyEventId;
+  playerId: PlayerId;
+  penaltyCard: PenaltyCard;
+  offenses: Offense[];
+}
+
+export interface Offense {
+  type: OffenseType;
+
+  /**
+   * Optional details, is only required when the offense type requires it.
+   */
+  details?: string;
+}
+
+export interface OffenseType {
+  code:string;
+  description:string;
+  detailsRequired: boolean;
+}
+
 export type WatchState = 'Ticking' | 'Pausing';
+export type PenaltyCard = 'Yellow' |'YellowAndRed'| 'Red';

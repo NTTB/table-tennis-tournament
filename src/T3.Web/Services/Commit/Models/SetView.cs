@@ -23,4 +23,9 @@ public record SetView
     /// The watches in the current set. They are not part of any game.
     /// </summary>
     public required WatchView[] SetWatches { get; init; }
+    
+    /// <summary>
+    /// The penalty events in the current set. They are not part of any game.
+    /// </summary>
+    public required PenaltyEvent[] PenaltyEvents { get; init; }
 }

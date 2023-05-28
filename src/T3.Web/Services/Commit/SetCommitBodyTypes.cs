@@ -20,6 +20,8 @@ public static class SetCommitBodyTypes
         {nameof(SetCommitBodyType.AddWatch), typeof(AddWatchCommand)},
         {nameof(SetCommitBodyType.UpdateWatch), typeof(UpdateWatchCommand)},
         {nameof(SetCommitBodyType.RemoveWatch), typeof(RemoveWatchCommand)},
+        {nameof(SetCommitBodyType.AddPenaltyEvent), typeof(AddPenaltyEventCommand)},
+        {nameof(SetCommitBodyType.RemovePenaltyEvent), typeof(RemovePenaltyEventCommand)},
     };
 
     static SetCommitBodyTypes()

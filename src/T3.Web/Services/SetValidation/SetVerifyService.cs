@@ -57,7 +57,8 @@ public class SetCommitValidateService : ISetCommitValidateService
             HomePlayers = Array.Empty<PlayerView>(),
             AwayPlayers = Array.Empty<PlayerView>(),
             Games = Array.Empty<GameView>(),
-            SetWatches = Array.Empty<WatchView>()
+            SetWatches = Array.Empty<WatchView>(),
+            PenaltyEvents = Array.Empty<PenaltyEvent>()
         };
 
         foreach (var commit in commits)
@@ -91,11 +92,30 @@ public class SetCommitValidateService : ISetCommitValidateService
                 AddWatchCommand addWatchCommand => ApplyCommand(view, addWatchCommand),
                 UpdateWatchCommand updateWatchCommand => await ApplyCommand(view, updateWatchCommand),
                 RemoveWatchCommand removeWatchCommand => ApplyCommand(view, removeWatchCommand),
+                AddPenaltyEventCommand addPenaltyEventCommand => ApplyCommand(view, addPenaltyEventCommand),
+                RemovePenaltyEventCommand removePenaltyEventCommand => ApplyCommand(view, removePenaltyEventCommand),
                 _ => throw new Exception("Unable to apply command: " + command.GetType().FullName)
             };
         }
 
         return view;
+    }
+
+    private SetView ApplyCommand(SetView view, RemovePenaltyEventCommand command)
+    {
+        var penaltyEvents = view.PenaltyEvents.ToList();
+        penaltyEvents.RemoveAll(x => x.PenaltyEventId == command.PenaltyEventId);
+        return view with { PenaltyEvents = penaltyEvents.ToArray() };
+    }
+
+    private SetView ApplyCommand(SetView view, AddPenaltyEventCommand command)
+    {
+        if(view.PenaltyEvents.Any(x=>x.PenaltyEventId == command.PenaltyEvent.PenaltyEventId))
+            throw new Exception("Penalty event already exists in set");
+        
+        var penaltyEvents = view.PenaltyEvents.ToList();
+        penaltyEvents.Add(command.PenaltyEvent);
+        return view with { PenaltyEvents = penaltyEvents.ToArray() };
     }
 
     private SetView ApplyCommand(SetView view, AddWatchCommand command)

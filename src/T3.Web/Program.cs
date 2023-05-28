@@ -3,9 +3,11 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using T3.Web.Hubs;
+using T3.Web.Migrations;
 using T3.Web.Services.Commit;
 using T3.Web.Services.Data;
 using T3.Web.Services.Identity;
+using T3.Web.Services.Rules;
 using T3.Web.Services.Set;
 using T3.Web.Services.SetValidation;
 using T3.Web.Services.Shared;
@@ -20,6 +22,7 @@ builder.Services
     .AddSharedModule()
     .AddDataService(config)
     .AddIdentityServices(config)
+    .AddRulesModule()
     .AddSetModule()
     .AddSetValidationModule()
     .AddTimestampModule()
@@ -65,6 +68,9 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+// Run the database migrations.
+var migrationRunner =app.Services.GetRequiredService<IMigrationService>();
+migrationRunner.PerformMigration();
 
 app.UseDeveloperExceptionPage();
 // Configure the HTTP request pipeline.
