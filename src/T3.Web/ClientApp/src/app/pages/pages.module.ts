@@ -15,6 +15,9 @@ import {PageSetListComponent} from './page-set-list/page-set-list.component';
 import { PageSetViewComponent } from './page-set-view/page-set-view.component';
 import { PageAccountKeysComponent } from './page-account-keys/page-account-keys.component';
 import { PageLoginPostComponent } from './page-login-post/page-login-post.component';
+import { PageTestSecretKeysComponent } from './page-test-secret-keys/page-test-secret-keys.component';
+import {FormsModule} from "@angular/forms";
+import { PageTestSecretNoteComponent } from './page-test-secret-note/page-test-secret-note.component';
 
 
 @NgModule({
@@ -29,12 +32,15 @@ import { PageLoginPostComponent } from './page-login-post/page-login-post.compon
     PageSetViewComponent,
     PageAccountKeysComponent,
     PageLoginPostComponent,
+    PageTestSecretKeysComponent,
+    PageTestSecretNoteComponent,
   ],
   imports: [
     CommonModule,
     RouterModule,
     AccountModule,
     SetModule,
+    FormsModule,
   ]
 })
 export class PagesModule {

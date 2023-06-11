@@ -53,7 +53,7 @@ public class AccountController : ControllerBase
     [HttpGet("keys")]
     public async Task<AccountKeysResponse[]> GetKeys()
     {
-        var accountId = _accountTokenService.GetIdentity(this.User).AccountId;
+        var accountId = _accountTokenService.GetIdentity(User).AccountId;
         var exitingKeys = await _accountPublicKeyService.GetKeys(accountId);
         return exitingKeys
             .Select(k => new AccountKeysResponse(k.PublicKey, k.CreatedAtUtc, k.RevokedAtUtc))
@@ -64,7 +64,7 @@ public class AccountController : ControllerBase
     [HttpPost("add-key")]
     public async Task AddKey([FromBody] AccountAddKeyRequest request)
     {
-        var accountId = _accountTokenService.GetIdentity(this.User).AccountId;
+        var accountId = _accountTokenService.GetIdentity(User).AccountId;
         await _accountPublicKeyService.AddKey(accountId, request.PublicKey);
     }
     
@@ -72,7 +72,7 @@ public class AccountController : ControllerBase
     [HttpPost("revoke-key")]
     public async Task RevokeKey([FromBody] AccountRevokeKeyRequest request)
     {
-        var accountId = _accountTokenService.GetIdentity(this.User).AccountId;
+        var accountId = _accountTokenService.GetIdentity(User).AccountId;
         await _accountPublicKeyService.RevokeKey(accountId, request.PublicKey);
     }
 }

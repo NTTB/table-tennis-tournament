@@ -1,4 +1,6 @@
+using T3.Web.Services.Commit.ValueObjects;
 using T3.Web.Services.Rules;
+using T3.Web.Services.SecretNotes.ValueObjects;
 
 namespace T3.Web.Services.Commit.Models;
 
@@ -10,8 +12,7 @@ public record Offense
     public required OffenseType Type { get; init; }
     
     /// <summary>
-    /// Extra details about the offense. Can always be provided, but is only required when the type says it is required.
-    /// Example: "The player threw the bat in the direction of the umpire."
+    /// The id of the note that was created and attached. Due to it being a private note, only a few can retrieve it.
     /// </summary>
-    public required string? Details { get; init; }
+    public required SecretNoteId? SecretNoteId { get; init; }
 }

@@ -8,6 +8,7 @@ using T3.Web.Services.Commit;
 using T3.Web.Services.Data;
 using T3.Web.Services.Identity;
 using T3.Web.Services.Rules;
+using T3.Web.Services.SecretNotes;
 using T3.Web.Services.Set;
 using T3.Web.Services.SetValidation;
 using T3.Web.Services.Shared;
@@ -18,6 +19,13 @@ var config = builder.Configuration;
 
 // Add services to the container
 
+var jsonConverters = new JsonConverter[]
+{
+    new JsonStringEnumConverter(),
+    new SecretNotePayloadConvertor(),
+    new SetCommitBodyConvertor()
+};
+
 builder.Services
     .AddSharedModule()
     .AddDataService(config)
@@ -27,13 +35,16 @@ builder.Services
     .AddSetValidationModule()
     .AddTimestampModule()
     .AddCommitModule()
+    .AddSecretNoteModule()
     .AddSignalR(options =>
     {
         options.EnableDetailedErrors = true;
-    }).AddJsonProtocol(options=>
+    }).AddJsonProtocol(options =>
     {
-        options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        options.PayloadSerializerOptions.Converters.Add(new SetCommitBodyConvertor());
+        foreach (var converter in jsonConverters)
+        {
+            options.PayloadSerializerOptions.Converters.Add(converter);
+        }
     });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -63,7 +74,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    foreach (var converter in jsonConverters)
+    {
+        options.JsonSerializerOptions.Converters.Add(converter);
+    }
+});
 
 
 var app = builder.Build();

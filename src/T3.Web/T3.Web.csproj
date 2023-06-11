@@ -69,6 +69,7 @@
 
     <ItemGroup>
       <Folder Include="Services\Commit\Entities\" />
+      <Folder Include="Services\SecretNotes\Models\" />
       <Folder Include="Services\Set\Models\" />
     </ItemGroup>
 

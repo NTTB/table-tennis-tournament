@@ -2,6 +2,7 @@ import {Score} from "./score";
 import {PlayerView} from "./player-view";
 import {PenaltyEventId, PlayerId, WatchId} from "./typed-ids";
 import {Timestamp} from "./timestamp";
+import {SecretNoteId} from "../../secret-notes/models/typed-ids";
 
 export interface SetView {
   gamesWon: Score;
@@ -52,8 +53,9 @@ export interface Offense {
 
   /**
    * Optional details, is only required when the offense type requires it.
+   * Since the details can't be freely shared they are put in a secret note.
    */
-  details?: string;
+  secretNoteId?: SecretNoteId;
 }
 
 export interface OffenseType {
