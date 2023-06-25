@@ -1,0 +1,1 @@
+export type PenaltyCard = 'Yellow' | 'YellowAndRed' | 'Red';

@@ -1,0 +1,1 @@
+export type WatchState = 'Ticking' | 'Pausing';
