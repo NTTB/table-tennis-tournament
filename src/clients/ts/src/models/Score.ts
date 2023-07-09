@@ -1,2 +1,4 @@
-
-export interface Score { home: number; away: number; }
+export interface Score {
+  home: number;
+  away: number;
+}
