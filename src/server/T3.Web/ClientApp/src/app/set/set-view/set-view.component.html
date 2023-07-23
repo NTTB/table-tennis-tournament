@@ -1,15 +1,21 @@
 <h2>State</h2>
-<code>{{connectionState$|async|json}}</code>
+<ng-container *ngIf="ready$|async; else notReady">
+  <code>{{connectionState$|async|json}}</code>
 
-<div class="buttons">
-  <button (click)="sendNoOp()">Send NoOp</button>
-  <button (click)="sendInitialState()">Send InitialState</button>
-  <button (click)="increaseSetScore('home')">Increase SetScore Home</button>
-  <button (click)="increaseSetScore('away')">Increase SetScore Away</button>
-  <button (click)="addGame()">Add game</button>
-  <button (click)="increaseGameScore('home')">Increase current game home</button>
-  <button (click)="increaseGameScore('away')">Increase current game away</button>
-</div>
+  <div class="buttons">
+    <button (click)="sendNoOp()">Send NoOp</button>
+    <button (click)="sendInitialState()">Send InitialState</button>
+    <button (click)="increaseSetScore('home')">Increase SetScore Home</button>
+    <button (click)="increaseSetScore('away')">Increase SetScore Away</button>
+    <button (click)="addGame()">Add game</button>
+    <button (click)="increaseGameScore('home')">Increase current game home</button>
+    <button (click)="increaseGameScore('away')">Increase current game away</button>
+  </div>
 
-<h2>LastMessage</h2>
-<app-set-commit-display *ngIf="setState$|async as commit" [setCommit]="commit"></app-set-commit-display>
+  <h2>LastMessage</h2>
+  <app-set-commit-display *ngIf="setState$|async as commit" [setCommit]="commit.content"></app-set-commit-display>
+</ng-container>
+
+<ng-template #notReady>
+  <p>Not ready</p>
+</ng-template>

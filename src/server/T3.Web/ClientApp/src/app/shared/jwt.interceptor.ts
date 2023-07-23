@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpInterceptor, HttpRequest, HttpHandler} from '@angular/common/http';
+import {HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {JwtService} from "./jwt.service";
 
 @Injectable({providedIn: 'root'})
@@ -24,3 +24,5 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(request);
   }
 }
+
+

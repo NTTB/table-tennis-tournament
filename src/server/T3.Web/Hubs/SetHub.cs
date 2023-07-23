@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using T3.Web.Services.Commit;
+using T3.Web.Services.Commit.Entities;
 using T3.Web.Services.Commit.Models;
 using T3.Web.Services.Identity;
 using T3.Web.Services.Set.ValueObjects;
@@ -22,19 +23,24 @@ public class SetHub : Hub
         _logger = logger;
     }
 
-    public async Task Push(SetCommit commit)
+    public async Task Push(Message<SetCommit> message)
     {
         // Store changes
         var identity = _accountTokenService.GetIdentity(Context.User);
-        if (identity.AccountId != commit.Header.Author.UserId.Value)
+        if (identity.AccountId != message.Content.Header.Author.UserId.Value)
             throw new Exception("AccountId of user does not match author of commit");
 
-        await _setCommitService.Add(commit);
+        var entity = new SetCommitEntity()
+        {
+            Content = message.Content,
+            Signature = message.Signature,
+        };
+        await _setCommitService.Add(entity);
 
         // Inform clients
-        _logger.LogInformation("Sending SetCommitPushed to group {SetId}", SetIdGroup(commit.Header.SetId));
-        await Clients.Groups(SetIdGroup(commit.Header.SetId)).SendAsync("SetCommitPushed", commit);
-        await Clients.Group(AllSetGroupName()).SendAsync("SetCommitPushed", commit);
+        _logger.LogInformation("Sending SetCommitPushed to group {SetId}", SetIdGroup(message.Content.Header.SetId));
+        await Clients.Groups(SetIdGroup(message.Content.Header.SetId)).SendAsync("SetCommitPushed", message);
+        await Clients.Group(AllSetGroupName()).SendAsync("SetCommitPushed", message);
     }
 
     public async Task AddSetWatchAll()
@@ -64,7 +70,7 @@ public class SetHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, SetIdGroup(setId));
     }
 
-    public async Task<SetCommit[]> GetAllCommits(SetId setId)
+    public async Task<SetCommitEntity[]> GetAllCommits(SetId setId)
     {
         var commits = await _setCommitService.GetAll(setId);
         return commits.ToArray();

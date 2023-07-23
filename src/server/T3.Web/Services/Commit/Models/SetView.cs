@@ -7,12 +7,12 @@ public record SetView
     /// <summary>
     /// The home players in this set.
     /// </summary>
-    public required PlayerView[] HomePlayers { get; init; }
+    public TeamView? HomeTeam { get; init; }
 
     /// <summary>
     /// The away players in this set.
     /// </summary>
-    public required PlayerView[] AwayPlayers { get; init; }
+    public TeamView? AwayTeam { get; init; }
 
     /// <summary>
     /// The games in this set.

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using T3.Web.Services.Commit;
+using T3.Web.Services.Commit.Entities;
 using T3.Web.Services.Commit.Models;
 using T3.Web.Services.Commit.ValueObjects;
 using T3.Web.Services.SetValidation.Models;
@@ -26,53 +27,52 @@ public class SetCommitValidateService : ISetCommitValidateService
     public async Task<SetCommitValidationResult> ValidateCommit(CommitId commitId)
     {
         var lastCommit = await _setCommitService.GetById(commitId);
-        var allCommits = (await _setCommitService.GetAll(lastCommit.Header.SetId)).ToArray();
+        var allCommits = (await _setCommitService.GetAll(lastCommit.Content.Header.SetId)).ToArray();
 
-        Stack<SetCommit> commits = new Stack<SetCommit>();
+        Stack<SetCommitEntity> commits = new Stack<SetCommitEntity>();
 
         var currentCommit = lastCommit;
         while (currentCommit != null)
         {
             commits.Push(currentCommit);
-            currentCommit = allCommits.SingleOrDefault(x => x.Header.CommitId == currentCommit.Header.PreviousCommitId);
+            currentCommit = allCommits.SingleOrDefault(x => x.Content.Header.CommitId == currentCommit.Content.Header.PreviousCommitId);
         }
 
         var allInvalidViews = new List<IncorrectViews>();
-        await foreach (var view in  GetInvalidViews(commits))
+        await foreach (var view in GetInvalidViews(commits))
         {
             allInvalidViews.Add(view);
         }
-        
+
         return new SetCommitValidationResult(
             Valid: !allInvalidViews.Any(),
             InvalidViews: allInvalidViews.ToArray()
         );
     }
 
-    private async IAsyncEnumerable<IncorrectViews> GetInvalidViews(Stack<SetCommit> commits)
+    private async IAsyncEnumerable<IncorrectViews> GetInvalidViews(Stack<SetCommitEntity> commits)
     {
         var calculatedView = new SetView
         {
             GamesWon = Score.CreateZero(),
-            HomePlayers = Array.Empty<PlayerView>(),
-            AwayPlayers = Array.Empty<PlayerView>(),
+            HomeTeam = null,
+            AwayTeam = null,
             Games = Array.Empty<GameView>(),
             SetWatches = Array.Empty<WatchView>(),
             PenaltyEvents = Array.Empty<PenaltyEvent>()
-            
         };
 
         foreach (var commit in commits)
         {
-            calculatedView = await ApplyCommands(calculatedView, commit.Commands);
+            calculatedView = await ApplyCommands(calculatedView, commit.Content.Commands);
 
             // Due to view having arrays, we need to serialize it to compare it.
             var calculatedViewJson = JsonSerializer.Serialize(calculatedView);
-            var actualViewJson = JsonSerializer.Serialize(commit.View);
+            var actualViewJson = JsonSerializer.Serialize(commit.Content.View);
 
             if (calculatedViewJson == actualViewJson) continue;
 
-            yield return new IncorrectViews(commit.View, calculatedView);
+            yield return new IncorrectViews(commit.Content.View, calculatedView);
         }
     }
 
@@ -83,8 +83,8 @@ public class SetCommitValidateService : ISetCommitValidateService
             view = command switch
             {
                 NoOpCommand noOpCommand => ApplyCommand(view, noOpCommand),
-                SetHomePlayersCommand setHomePlayersCommand => ApplyCommand(view, setHomePlayersCommand),
-                SetAwayPlayersCommand setAwayPlayersCommand => ApplyCommand(view, setAwayPlayersCommand),
+                SetHomeTeamCommand setHomePlayersCommand => ApplyCommand(view, setHomePlayersCommand),
+                SetAwayTeamCommand setAwayPlayersCommand => ApplyCommand(view, setAwayPlayersCommand),
                 UpdateSetScoreCommand updateSetScoreCommand => ApplyCommand(view, updateSetScoreCommand),
                 SetCurrentServerCommand setCurrentServerCommand => ApplyCommand(view, setCurrentServerCommand),
                 SetInitialServerCommand setInitialServerCommand => ApplyCommand(view, setInitialServerCommand),
@@ -112,21 +112,21 @@ public class SetCommitValidateService : ISetCommitValidateService
 
     private SetView ApplyCommand(SetView view, UpdatePenaltyEventCommand command)
     {
-        if(view.PenaltyEvents.All(x => x.PenaltyEventId != command.PenaltyEvent.PenaltyEventId))
+        if (view.PenaltyEvents.All(x => x.PenaltyEventId != command.PenaltyEvent.PenaltyEventId))
             throw new Exception("Penalty event doesn't exists in set");
-        
+
         // Replace penalty event
         var penaltyEvents = view.PenaltyEvents.ToList();
-        var index= penaltyEvents.FindIndex(x=>x.PenaltyEventId == command.PenaltyEvent.PenaltyEventId);
-        penaltyEvents[index] = command.PenaltyEvent; 
+        var index = penaltyEvents.FindIndex(x => x.PenaltyEventId == command.PenaltyEvent.PenaltyEventId);
+        penaltyEvents[index] = command.PenaltyEvent;
         return view with { PenaltyEvents = penaltyEvents.ToArray() };
     }
-    
+
     private SetView ApplyCommand(SetView view, AddPenaltyEventCommand command)
     {
-        if(view.PenaltyEvents.Any(x=>x.PenaltyEventId == command.PenaltyEvent.PenaltyEventId))
+        if (view.PenaltyEvents.Any(x => x.PenaltyEventId == command.PenaltyEvent.PenaltyEventId))
             throw new Exception("Penalty event already exists in set");
-        
+
         var penaltyEvents = view.PenaltyEvents.ToList();
         penaltyEvents.Add(command.PenaltyEvent);
         return view with { PenaltyEvents = penaltyEvents.ToArray() };
@@ -135,7 +135,7 @@ public class SetCommitValidateService : ISetCommitValidateService
     private SetView ApplyCommand(SetView view, AddWatchCommand command)
     {
         // Check if watch already exists in set or game
-        if (view.SetWatches.Any(x => x.Id == command.WatchId)) 
+        if (view.SetWatches.Any(x => x.Id == command.WatchId))
             throw new Exception("Watch already exists in set");
         if (view.Games.Any(y => y.Watches.Any(x => x.Id == command.WatchId)))
             throw new Exception("Watch already exists in game");
@@ -260,14 +260,14 @@ public class SetCommitValidateService : ISetCommitValidateService
         return view with { GamesWon = command.SetScore };
     }
 
-    private SetView ApplyCommand(SetView view, SetHomePlayersCommand command)
+    private SetView ApplyCommand(SetView view, SetHomeTeamCommand command)
     {
-        return view with { HomePlayers = command.HomePlayers };
+        return view with { HomeTeam = command.HomeTeam };
     }
 
-    private SetView ApplyCommand(SetView view, SetAwayPlayersCommand command)
+    private SetView ApplyCommand(SetView view, SetAwayTeamCommand command)
     {
-        return view with { AwayPlayers = command.AwayPlayers };
+        return view with { AwayTeam = command.AwayTeam };
     }
 
     // ReSharper disable once UnusedParameter.Local

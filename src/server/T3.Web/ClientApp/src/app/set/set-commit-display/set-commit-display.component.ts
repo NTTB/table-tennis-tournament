@@ -1,8 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {SetCommit} from "../models/set-commit";
+import { Component, Input, OnInit } from '@angular/core';
+import { SetApi, SetCommit, SetCommitValidationResult } from "@nttb/t3-api-client";
 import { addDays, addMilliseconds, format } from 'date-fns';
-import {firstValueFrom} from "rxjs";
-import {SetCommitApiService, SetCommitValidationResult} from "../set-commit-api.service";
 
 /**
  * Shows a set commit in a human readable way.
@@ -17,11 +15,21 @@ export class SetCommitDisplayComponent implements OnInit {
   setCommit!: SetCommit;
   validationResult?: SetCommitValidationResult;
 
-  get header() { return this.setCommit.header; }
-  get author() { return this.header.author; }
-  get clientApp() { return this.author.clientApp; }
+  get header() {
+    return this.setCommit.header;
+  }
 
-  get view() { return this.setCommit.view; }
+  get author() {
+    return this.header.author;
+  }
+
+  get clientApp() {
+    return this.author.clientInfo;
+  }
+
+  get view() {
+    return this.setCommit.view;
+  }
 
   get createdAtDateTime() {
     let serverTimestamp = this.header.createdAt.serverTimestamp;
@@ -30,17 +38,18 @@ export class SetCommitDisplayComponent implements OnInit {
     date = addMilliseconds(date, serverTimestamp.millisecondOfDay);
     date = addMilliseconds(date, this.header.createdAt.clientOffset.milliseconds);
     const str = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-    return new Date(str+ '+0000');
+    return new Date(str + '+0000');
   }
 
   constructor(
-    private readonly setCommitApiService: SetCommitApiService,
-  ) { }
+    private readonly setApi: SetApi,
+  ) {
+  }
 
   ngOnInit(): void {
   }
 
   async onValidateClick() {
-    this.validationResult = await firstValueFrom(this.setCommitApiService.validate(this.setCommit.header.commitId));
+    this.validationResult = await this.setApi.validate(this.setCommit.header.setId, this.setCommit.header.commitId);
   }
 }

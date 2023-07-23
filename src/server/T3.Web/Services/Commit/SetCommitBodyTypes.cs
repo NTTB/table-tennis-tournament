@@ -10,8 +10,8 @@ public static class SetCommitBodyTypes
     private static readonly Dictionary<string, Type> _typeMap = new()
     {
         {nameof(SetCommitBodyType.NoOp), typeof(NoOpCommand)},
-        {nameof(SetCommitBodyType.SetHomePlayers), typeof(SetHomePlayersCommand)},
-        {nameof(SetCommitBodyType.SetAwayPlayers), typeof(SetAwayPlayersCommand)},
+        {nameof(SetCommitBodyType.SetHomeTeam), typeof(SetHomeTeamCommand)},
+        {nameof(SetCommitBodyType.SetAwayTeam), typeof(SetAwayTeamCommand)},
         {nameof(SetCommitBodyType.SetInitialServer), typeof(SetInitialServerCommand)},
         {nameof(SetCommitBodyType.SetCurrentServer), typeof(SetCurrentServerCommand)},
         {nameof(SetCommitBodyType.UpdateSetScore), typeof(UpdateSetScoreCommand)},

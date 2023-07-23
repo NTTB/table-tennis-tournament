@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using T3.Web.Services.Commit.Entities;
 using T3.Web.Services.Commit.Models;
 using T3.Web.Services.Commit.ValueObjects;
 using T3.Web.Services.Identity;
@@ -13,21 +14,21 @@ namespace T3.Web.Services.Commit;
 
 public interface ISetCommitService
 {
-    Task<IEnumerable<SetCommit>> GetAll(SetId setId);
-    Task<SetCommit> GetById(CommitId commitId);
-    Task Add(SetCommit commit);
+    Task<IEnumerable<SetCommitEntity>> GetAll(SetId setId);
+    Task<SetCommitEntity> GetById(CommitId commitId);
+    Task Add(SetCommitEntity commit);
 }
 
 public class SetCommitService : ISetCommitService
 {
-    private readonly IMongoCollection<SetCommit> _collection;
+    private readonly IMongoCollection<SetCommitEntity> _collection;
     private readonly ILogger<SetCommitService> _logger;
     private readonly IAccountPublicKeyService _accountPublicKeyService;
     private readonly ITimestampService _timestampService;
 
     public SetCommitService(
         ILogger<SetCommitService> logger,
-        IMongoCollection<SetCommit> collection,
+        IMongoCollection<SetCommitEntity> collection,
         IAccountPublicKeyService accountPublicKeyService, ITimestampService timestampService)
     {
         _logger = logger;
@@ -36,22 +37,22 @@ public class SetCommitService : ISetCommitService
         _timestampService = timestampService;
     }
 
-    public async Task<IEnumerable<SetCommit>> GetAll(SetId setId)
+    public async Task<IEnumerable<SetCommitEntity>> GetAll(SetId setId)
     {
-        return await _collection.Find(x => x.Header.SetId.Value == setId.Value).ToListAsync();
+        return await _collection.Find(x => x.Content.Header.SetId.Value == setId.Value).ToListAsync();
     }
 
-    public async Task<SetCommit> GetById(CommitId commitId)
+    public async Task<SetCommitEntity> GetById(CommitId commitId)
     {
-        return await _collection.Find(x => x.Header.CommitId.Value == commitId.Value).SingleAsync();
+        return await _collection.Find(x => x.Content.Header.CommitId.Value == commitId.Value).SingleAsync();
     }
 
-    public async Task Add(SetCommit commit)
+    public async Task Add(SetCommitEntity commit)
     {
         ValidateSignature(commit);
         ValidatePayload(commit);
         await ValidateAuthor(commit);
-        await ValidateTime(commit);
+        await ValidateTime(commit.Content);
 
         await _collection.InsertOneAsync(commit);
     }
@@ -73,9 +74,9 @@ public class SetCommitService : ISetCommitService
         }
     }
 
-    private async Task ValidateAuthor(SetCommit commit)
+    private async Task ValidateAuthor(SetCommitEntity commit)
     {
-        var accountId = commit.Header.Author.UserId.Value;
+        var accountId = commit.Content.Header.Author.UserId.Value;
         var publicKey = commit.Signature.PublicKey;
         var isValid = await _accountPublicKeyService.IsKeyValid(accountId, publicKey);
         if (!isValid)
@@ -84,7 +85,7 @@ public class SetCommitService : ISetCommitService
         }
     }
 
-    private void ValidatePayload(SetCommit commit)
+    private void ValidatePayload(SetCommitEntity commit)
     {
         var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
@@ -95,7 +96,7 @@ public class SetCommitService : ISetCommitService
             }
         };
 
-        var commitElement = JsonSerializer.SerializeToElement(commit, jsonSerializerOptions);
+        var commitElement = JsonSerializer.SerializeToElement(commit.Content, jsonSerializerOptions);
         var verifyElement = JsonSerializer.Deserialize<JsonElement>(commit.Signature.Payload);
 
         // Get all the paths that are in the verify element
@@ -112,7 +113,7 @@ public class SetCommitService : ISetCommitService
                 path = verifyKp.Key,
                 commitValue = commitValues[verifyKp.Key],
                 proofValue = verifyKp.Value,
-                areEqual = object.Equals(commitValues[verifyKp.Key], verifyKp.Value)
+                areEqual = Equals(commitValues[verifyKp.Key], verifyKp.Value)
             })
             .Where(x => !x.areEqual)
             .ToList();
@@ -120,6 +121,8 @@ public class SetCommitService : ISetCommitService
 
         if (missingKeys.Any() || invalidValues.Any())
         {
+            // ReSharper disable once ConvertToUsingDeclaration
+            // ReSharper disable once UnusedVariable
             using (var scope = _logger.BeginScope("Payload signature does not match the commit"))
             {
                 foreach (var key in missingKeys)
@@ -129,7 +132,8 @@ public class SetCommitService : ISetCommitService
 
                 foreach (var invalidValue in invalidValues)
                 {
-                    _logger.LogTrace("Invalid value: {Path}, in commit: {CommitValue}, in proof: {ProofValue}", invalidValue.path, invalidValue.commitValue, invalidValue.proofValue);
+                    _logger.LogTrace("Invalid value: {Path}, in commit: {CommitValue}, in proof: {ProofValue}", invalidValue.path, invalidValue.commitValue,
+                        invalidValue.proofValue);
                 }
             }
 
@@ -208,22 +212,22 @@ public class SetCommitService : ISetCommitService
         }
     }
 
-    private void ValidateSignature(SetCommit commit)
+    private void ValidateSignature(SetCommitEntity message)
     {
-        var jsonWebKey = JsonWebKey.Create(commit.Signature.PublicKey);
+        var jsonWebKey = JsonWebKey.Create(message.Signature.PublicKey);
         // Verify the signature of the message that was sent
         var algorithm = CryptoProviderFactory.Default.CreateForVerifying(jsonWebKey, "RS256");
-        var isValid = algorithm.Verify(Encoding.UTF8.GetBytes(commit.Signature.Payload),
-            Convert.FromBase64String(commit.Signature.Signature));
+        var isValid = algorithm.Verify(Encoding.UTF8.GetBytes(message.Signature.Payload),
+            Convert.FromBase64String(message.Signature.Signature));
         if (isValid) return;
 
         throw new Exception("Signature is not valid")
         {
             Data =
             {
-                { "payload", commit.Signature.Payload },
-                { "signature", commit.Signature.Signature },
-                { "publicKey", commit.Signature.PublicKey }
+                { "payload", message.Signature.Payload },
+                { "signature", message.Signature.Signature },
+                { "publicKey", message.Signature.PublicKey }
             }
         };
     }

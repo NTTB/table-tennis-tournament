@@ -42,7 +42,6 @@ async function generateModelsIndex() {
   const files = await GetFilesInDirectory('./src/models', false);
   const models = files
     .map((file) => path.relative(path.resolve("./src/models"), file))
-    .filter((file) => file !== 'index.ts')
     .map((file) => file.replace('.ts', ''));
   const index = models.map((model) => `export * from './${model}';`).join('\n');
   await fs.writeFile('src/models/index.ts', index);
@@ -54,9 +53,11 @@ async function generateIndex() {
   const files = await GetFilesInDirectory('./src', false);
   const models = files
     .map((file) => path.relative(path.resolve("./src"), file))
-    .filter((file) => file !== 'index.ts')
     .map((file) => file.replace('.ts', ''));
-  const index = models.map((model) => `export * from './${model}';`).join('\n');
+  const index = [
+    ...models.map((model) => `export * from './${model}';`), 
+    `export * from './models';`,
+  ].join('\n');
   await fs.writeFile('src/index.ts', index);
 }
 

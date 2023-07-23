@@ -7,8 +7,8 @@ public enum SetCommitBodyType
 {
     Invalid,
     NoOp,
-    SetHomePlayers,
-    SetAwayPlayers,
+    SetHomeTeam,
+    SetAwayTeam,
     UpdateSetScore,
     SetCurrentServer,
     SetInitialServer,
@@ -45,16 +45,16 @@ public record NoOpCommand : SetCommitCommand
     public override SetCommitBodyType Type => SetCommitBodyType.NoOp;
 }
 
-public record SetHomePlayersCommand : SetCommitCommand
+public record SetHomeTeamCommand : SetCommitCommand
 {
-    public override SetCommitBodyType Type => SetCommitBodyType.SetHomePlayers;
-    public PlayerView[] HomePlayers { get; set; }
+    public override SetCommitBodyType Type => SetCommitBodyType.SetHomeTeam;
+    public TeamView? HomeTeam { get; set; }
 }
 
-public record SetAwayPlayersCommand : SetCommitCommand
+public record SetAwayTeamCommand : SetCommitCommand
 {
-    public override SetCommitBodyType Type => SetCommitBodyType.SetAwayPlayers;
-    public PlayerView[] AwayPlayers { get; set; }
+    public override SetCommitBodyType Type => SetCommitBodyType.SetAwayTeam;
+    public TeamView? AwayTeam { get; set; }
 }
 
 public record UpdateSetScoreCommand : SetCommitCommand

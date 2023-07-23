@@ -1,7 +1,6 @@
 import { ServerTimestamp } from "./models/ServerTimestamp";
 import { Timestamp } from "./models/Timestamp";
 import { IHttpClient } from "./HttpClient";
-import { IStartable } from "./IStartable";
 
 export interface IClockService {
   /**
@@ -10,7 +9,7 @@ export interface IClockService {
   getTimestamp(): Promise<Timestamp>;
 }
 
-export class ClockService implements IClockService, IStartable {
+export class ClockService implements IClockService {
   private latest?: {
     serverTimestamp: ServerTimestamp,
     fetchAt: Date,
@@ -35,10 +34,6 @@ export class ClockService implements IClockService, IStartable {
         milliseconds: this.differenceInMilliseconds(new Date(), this.latest.fetchAt)
       }
     };
-  }
-
-  public async start() {
-    await this.ensureServerIsRecent();
   }
 
   private getLatestTimestamp(): Promise<ServerTimestamp> {

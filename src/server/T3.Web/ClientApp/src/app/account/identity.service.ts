@@ -17,7 +17,6 @@ interface IdentityStorage {
 export class IdentityService {
   private _jwt$: Observable<JWTPayload | undefined>;
   private _userId$: Observable<string | undefined>;
-
   private _userId: string | undefined;
 
   public get userId(): string | undefined {

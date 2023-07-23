@@ -1,4 +1,5 @@
 using MongoDB.Bson.Serialization;
+using T3.Web.Services.Commit.Entities;
 using T3.Web.Services.Commit.Models;
 using T3.Web.Services.Data;
 
@@ -19,7 +20,7 @@ public static class CommitModule
         }
 
         return collection
-            .AddDbCollection<SetCommit>("setCommits")
+            .AddDbCollection<SetCommitEntity>("setCommits")
             .AddScoped<ISetCommitService, SetCommitService>()
             ;
     }

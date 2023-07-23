@@ -1,9 +1,8 @@
-import {startWith, tap, catchError, NEVER, EMPTY, BehaviorSubject, map} from 'rxjs';
-import {Component, Inject, OnInit} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {FormGroup, FormControl, Validators, ValidationErrors, AbstractControl} from '@angular/forms';
-import {AccountApiService} from "../account-api.service";
-import {Router} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators, ValidationErrors, AbstractControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AccountApi } from '@nttb/t3-api-client';
+import { startWith, BehaviorSubject, map } from 'rxjs';
 
 @Component({
   selector: 'app-create-account-form',
@@ -12,9 +11,7 @@ import {Router} from '@angular/router';
 })
 export class CreateAccountFormComponent implements OnInit {
   constructor(
-    private readonly http: HttpClient,
-    @Inject('BASE_URL') private readonly baseUrl: string,
-    private readonly accountApi: AccountApiService,
+    private readonly accountApi: AccountApi,
     private readonly router: Router,
   ) {
   }
@@ -30,7 +27,7 @@ export class CreateAccountFormComponent implements OnInit {
         const password = formGroup.get('password')?.value;
         const password_confirmation = formGroup.get('password_confirmation')?.value;
         if (password !== password_confirmation) {
-          return {passwordsDontMatch: true};
+          return { passwordsDontMatch: true };
         }
         return {};
       }
@@ -47,25 +44,24 @@ export class CreateAccountFormComponent implements OnInit {
     map(x => x === 'INVALID')
   );
 
-
   ngOnInit(): void {
   }
 
-  onSubmit() {
+  async onSubmit() {
     this.error$.next(null);
     if (this.form.invalid) {
       return;
     }
 
     var formData = this.form.value;
-    this.accountApi.create(formData.username!, formData.password!).pipe(
-      // tap(res => this.jwtService.setToken(res.jwtToken)),
-      tap(() => this.router.navigate(['/'])),
-      catchError(err => {
-        this.error$.next(JSON.stringify(err, null, 2));
-        return NEVER;
-      }),
-    ).subscribe();
+
+    try {
+      await this.accountApi.create(formData.username!, formData.password!);
+      this.router.navigate(['/']);
+
+    } catch (err) {
+      this.error$.next(JSON.stringify(err, null, 2));
+    }
   }
 
   hasError(control: AbstractControl, validation: string): Boolean {

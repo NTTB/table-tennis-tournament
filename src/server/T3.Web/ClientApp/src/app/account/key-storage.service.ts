@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {CryptoKeyService} from './crypto-key.service';
+import { Injectable } from '@angular/core';
+import { CryptoKeyService } from '@nttb/t3-api-client';
 
 const StorageKey = "t3-key";
 
@@ -44,13 +44,24 @@ export class KeyStorageService {
 
   async getPrivateKey() {
     if (!this.privateKey) {
-      var pkJwk = this.getFromStorage()?.privateKey;
+      const pkJwk = this.getFromStorage()?.privateKey;
       if (pkJwk) {
         this.privateKey = await this.cryptoKeyService.parse(pkJwk, 'sign');
       }
     }
 
     return this.privateKey;
+  }
+
+  async getPublicKey() {
+    if (!this.publicKey) {
+      const pkJwk = this.getFromStorage()?.publicKey;
+      if (pkJwk) {
+        this.publicKey = await this.cryptoKeyService.parse(pkJwk, 'verify');
+      }
+    }
+
+    return this.publicKey;
   }
 
   getPublicKeyJwk() {

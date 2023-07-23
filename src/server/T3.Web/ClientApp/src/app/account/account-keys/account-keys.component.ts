@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {BehaviorSubject, switchMap} from "rxjs";
-import {AccountApiService, AccountKeysResponse} from "../account-api.service";
+import { Component, OnInit } from '@angular/core';
+import { AccountApi, AccountKeysResponse } from '@nttb/t3-api-client';
+import { BehaviorSubject, switchMap } from "rxjs";
+
 
 @Component({
   selector: 'app-account-keys',
@@ -9,21 +10,21 @@ import {AccountApiService, AccountKeysResponse} from "../account-api.service";
 })
 export class AccountKeysComponent implements OnInit {
   constructor(
-    private readonly accountApiService: AccountApiService,
+    private readonly accountApi: AccountApi,
   ) {
   }
 
   reload$ = new BehaviorSubject<void>(undefined);
   keys$ = this.reload$.pipe(
-    switchMap(() => this.accountApiService.getKeys())
+    switchMap(() => this.accountApi.getKeys())
   );
 
   ngOnInit(): void {
   }
 
   revokeKey(item: AccountKeysResponse) {
-    this.accountApiService
-      .revokeKey({publicKey: item.publicKey})
-      .subscribe(() => this.reload$.next());
+    this.accountApi
+      .revokeKey({ publicKey: item.publicKey })
+      .then(() => this.reload$.next());
   }
 }

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using T3.Web.Services.Commit.ValueObjects;
 using T3.Web.Services.Set;
 using T3.Web.Services.Set.Entities;
+using T3.Web.Services.SetValidation;
+using T3.Web.Services.SetValidation.Models;
 
 namespace T3.Web.Controllers;
 
@@ -9,12 +12,15 @@ namespace T3.Web.Controllers;
 public class SetController : ControllerBase
 {
     private readonly ISetService _setService;
+    private readonly ISetCommitValidateService _setCommitValidateService;
 
     public SetController(
-        ISetService setService
+        ISetService setService,
+        ISetCommitValidateService setCommitValidateService
     )
     {
         _setService = setService;
+        _setCommitValidateService = setCommitValidateService;
     }
     
     [HttpGet("")]
@@ -23,13 +29,13 @@ public class SetController : ControllerBase
         return await _setService.GetAll();
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<SetEntity> GetById(Guid id)
     {
         return await _setService.GetById(id);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task Delete(Guid id)
     {
         await _setService.DeleteById(id);
@@ -40,5 +46,11 @@ public class SetController : ControllerBase
     {
         var result = await _setService.CreateSet(request);
         return result.Entity;
+    }
+    
+    [HttpPost("{id:guid}/commits/{commitId:guid}/validate")]
+    public async Task<SetCommitValidationResult> Validate(Guid id, Guid commitId)
+    {
+        return await _setCommitValidateService.ValidateCommit(new CommitId(commitId));
     }
 }

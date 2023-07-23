@@ -1,12 +1,9 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {IdentityService} from "../identity.service";
-import {SetCommitBuilderService} from "../../set/set-commit-builder.service";
-import {v4 as uuidv4} from 'uuid';
-import {lastValueFrom} from "rxjs";
-import {CryptoKeyService} from "../crypto-key.service";
-import {KeyStorageService} from "../key-storage.service";
-import {AccountApiService} from "../account-api.service";
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { IdentityService } from "../identity.service";
+import { v4 as uuidv4 } from 'uuid';
+import { KeyStorageService } from "../key-storage.service";
+import { AccountApi, CryptoKeyService } from '@nttb/t3-api-client';
 
 /**
  * This form is shown after the user has logged in.
@@ -19,22 +16,23 @@ import {AccountApiService} from "../account-api.service";
 export class PostLoginFormComponent implements OnInit {
   constructor(
     private readonly identityService: IdentityService,
-    private readonly setCommitBuilderService: SetCommitBuilderService,
-    private readonly cryptoKeyService: CryptoKeyService,
     private readonly keyStorageService: KeyStorageService,
-    private readonly accountApi: AccountApiService,
+    private readonly accountApi: AccountApi,
+    private readonly cryptoKeyService: CryptoKeyService,
   ) {
   }
 
   form = new FormGroup({
     displayName: new FormControl(this.identityService.stored.displayName, {
-      validators: [Validators.required,
+      validators: [
+        Validators.required,
         Validators.minLength(3)
-      ], nonNullable: true
+      ],
+      nonNullable: true
     }),
-    deviceName: new FormControl(this.identityService.stored.deviceName),
-    regenerateKeys: new FormControl(!this.keyStorageService.hasKeys()),
-    newSession: new FormControl(!this.identityService.stored.sessionId),
+    deviceName: new FormControl(this.identityService.stored.deviceName, { nonNullable: true }),
+    regenerateKeys: new FormControl(!this.keyStorageService.hasKeys(), { nonNullable: true }),
+    newSession: new FormControl(!this.identityService.stored.sessionId, { nonNullable: true }),
   });
 
   @Output() updated = new EventEmitter<void>();
@@ -62,22 +60,14 @@ export class PostLoginFormComponent implements OnInit {
       deviceName,
     });
 
-
-    this.setCommitBuilderService.updateAuthor({
-      displayName,
-      sessionId: {value: sessionId},
-      userId: {value: userId},
-      deviceName,
-    });
-
     if (this.form.value.regenerateKeys || !this.keyStorageService.hasKeys()) {
       // Regenerate the crypto keys
       const pair = await this.cryptoKeyService.generateKey();
       await this.keyStorageService.set(pair);
       // Send public key to server
-      await lastValueFrom(this.accountApi.addKey({
+      await this.accountApi.addKey({
         publicKey: JSON.stringify(await this.cryptoKeyService.serialize(pair.publicKey))
-      }));
+      });
     }
 
     // At this point all the identity information is set up.

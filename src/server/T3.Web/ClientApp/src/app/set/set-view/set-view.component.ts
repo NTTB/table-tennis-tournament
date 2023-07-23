@@ -1,11 +1,22 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {SetCommitService} from "../set-commit.service";
-import {SetCommitBuilderService} from "../set-commit-builder.service";
-import {SetCommitCommand, UpdateGameScoreCommand, UpdateSetScoreCommand} from "../models/set-commit-command";
-import {SetView} from "../models/set-view";
-import {filter, firstValueFrom, shareReplay} from "rxjs";
-import {PlayerView} from "../models/player-view";
-import {v4 as uuidv4} from 'uuid';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, filter, firstValueFrom, map, ReplaySubject, shareReplay, Subject } from "rxjs";
+import { v4 as uuidv4 } from 'uuid';
+import {
+  HubConnectionState,
+  ISetHubSubscription,
+  SetCommitMessage,
+  PlayerView,
+  SetCommit,
+  SetCommitCommand,
+  SetView,
+  UpdateGameScoreCommand,
+  UpdateSetScoreCommand,
+  MessageBuilder,
+  ClockService,
+  SetsHub
+} from '@nttb/t3-api-client';
+import { IdentityService } from "../../account/identity.service";
+import { KeyStorageService } from "../../account/key-storage.service";
 
 @Component({
   selector: 'app-set-view',
@@ -14,55 +25,78 @@ import {v4 as uuidv4} from 'uuid';
 })
 export class SetViewComponent implements OnInit, OnDestroy {
   constructor(
-    private readonly setCommitService: SetCommitService,
-    private readonly commitBuilder: SetCommitBuilderService,
+    private readonly clockService: ClockService,
+    private readonly setsHub: SetsHub,
+    private readonly identityService: IdentityService,
+    private readonly keyStorageService: KeyStorageService,
   ) {
   }
 
   @Input() setId?: string;
 
-  setState$ = this.setCommitService.messages$.pipe(
-    filter(x => x.header.setId.value == this.setId),
-    shareReplay({refCount: true, bufferSize: 1}),
+  ready$ = new BehaviorSubject<boolean>(false);
+
+  messages$ = new ReplaySubject<SetCommitMessage>(1);
+  setState$ = this.messages$.pipe(
+    filter(x => x.content.header.setId.value == this.setId),
+    shareReplay({ refCount: true, bufferSize: 1 }),
   );
-  connectionState$ = this.setCommitService.state$;
+  connectionState$ = new BehaviorSubject<HubConnectionState|undefined>(undefined);
+
+  private _messageSubcription?: ISetHubSubscription;
+  private _statusSubcription?: ISetHubSubscription;
 
   ngOnInit(): void {
-    this.setCommitService.start().then(() => {
-      this.setCommitService.addSetWatch({value: this.setId!}).then(() => console.log("Subscribed"));
+    this._statusSubcription = this.setsHub.addStatusSubscription((state) => this.connectionState$.next(state));
+    this.setsHub.start().then(() => {
+      this._messageSubcription = this.setsHub.addMessageSubscription((msg) => this.messages$.next(msg));
+      this.setsHub.addSetWatch({ value: this.setId! }).then(() => console.log("Subscribed"));
+      return this.ready$.next(true);
     });
   }
 
   ngOnDestroy() {
-    this.setCommitService.removeSetWatch({value: this.setId!}).then(() => console.log("Unsubscribed"));
+    this.setsHub.removeSetWatch({ value: this.setId! }).then(() => console.log("Unsubscribed"));
+    this._messageSubcription?.unsubscribe();
+    this._statusSubcription?.unsubscribe();
   }
 
   async sendNoOp() {
     if (!this.setId) return;
 
-    let noOpCommand: SetCommitCommand = {type: 'NoOp'};
-    let view: SetView = {
-      gamesWon: {home: 0, away: 0},
-      homePlayers: [],
-      awayPlayers: [],
-      games: [],
-      setWatches: [],
-      penaltyEvents: []
+    let content: SetCommit = {
+      commands: [{ type: 'NoOp' }],
+      header: {
+        setId: { value: this.setId },
+        commitId: { value: uuidv4() },
+        createdAt: await this.clockService.getTimestamp(),
+        previousCommitId: undefined,
+        author: {
+          userId: { value: this.identityService.userId! },
+          sessionId: { value: this.identityService.stored.sessionId! },
+          displayName: this.identityService.stored.displayName!,
+        },
+      },
+      view: {
+        gamesWon: { home: 0, away: 0 },
+        games: [],
+        setWatches: [],
+        penaltyEvents: [],
+      },
     };
 
-    const commit = await this.commitBuilder.create(this.setId, [noOpCommand], view, undefined);
-
-    await this.setCommitService.push(commit);
+    await this.pushMessage(content);
   }
 
   async sendInitialState() {
+    if (!this.setId) return;
     var wouter: PlayerView = {
       displayName: "Wouter",
-      playerId: {value: uuidv4()},
+      playerId: { value: uuidv4() },
     };
     var rutger: PlayerView = {
       displayName: "Rutger",
-      playerId: {value: uuidv4()},
+      playerId: { value: uuidv4() },
     };
 
     let view: SetView = {
@@ -72,24 +106,24 @@ export class SetViewComponent implements OnInit, OnDestroy {
           initialReceiver: rutger.playerId,
           currentServer: wouter.playerId,
           currentReceiver: rutger.playerId,
-          points: {home: 0, away: 0},
+          points: { home: 0, away: 0 },
           watches: [],
         }
       ],
-      homePlayers: [wouter],
-      awayPlayers: [rutger],
-      gamesWon: {home: 0, away: 0},
+      homeTeam: { displayName: "home", players: [wouter], teamId: { value: uuidv4() } },
+      awayTeam: { displayName: "away", players: [rutger], teamId: { value: uuidv4() } },
+      gamesWon: { home: 0, away: 0 },
       setWatches: [],
       penaltyEvents: []
     };
 
-    let setHomePlayersCommand: SetCommitCommand = {
-      type: "SetHomePlayers",
-      homePlayers: [wouter],
+    let setHomeTeamCommand: SetCommitCommand = {
+      type: "SetHomeTeam",
+      homeTeam: view.homeTeam,
     };
-    let setAwayPlayersCommand: SetCommitCommand = {
-      type: "SetAwayPlayers",
-      awayPlayers: [rutger],
+    let setAwayTeamCommand: SetCommitCommand = {
+      type: "SetAwayTeam",
+      awayTeam: view.awayTeam,
     };
 
     let addGameCommand: SetCommitCommand = {
@@ -112,22 +146,40 @@ export class SetViewComponent implements OnInit, OnDestroy {
       receivingPlayer: rutger.playerId,
     };
 
-    const commit = await this.commitBuilder.create(this.setId!, [
-      setHomePlayersCommand,
-      setAwayPlayersCommand,
-      addGameCommand,
-      setInitialServerCommand,
-      currentServerCommand
-    ], view, undefined);
+    var previousCommitId = await firstValueFrom(this.setState$.pipe(map(x => x.content.header.commitId)));
 
-    await this.setCommitService.push(commit);
+    let content: SetCommit = {
+      commands: [
+        setHomeTeamCommand,
+        setAwayTeamCommand,
+        addGameCommand,
+        setInitialServerCommand,
+        currentServerCommand
+      ],
+      header: {
+        setId: { value: this.setId },
+        commitId: { value: uuidv4() },
+        createdAt: await this.clockService.getTimestamp(),
+        previousCommitId: previousCommitId,
+        author: {
+          userId: { value: this.identityService.userId! },
+          sessionId: { value: this.identityService.stored.sessionId! },
+          displayName: this.identityService.stored.displayName!,
+        },
+      },
+      view: view
+    };
+
+
+    await this.pushMessage(content);
   }
 
   async increaseSetScore(side: 'home' | 'away') {
+    if (!this.setId) return;
     const setState = await firstValueFrom(this.setState$);
-    let view: SetView = setState.view;
+    let view: SetView = setState.content.view;
     view.gamesWon[side] += 1;
-    let previousCommitId = setState.header.commitId?.value;
+    let previousCommitId = setState.content.header.commitId!;
     let changeSetScoreCommand: UpdateSetScoreCommand = {
       type: 'UpdateSetScore', setScore: {
         home: view.gamesWon['home'],
@@ -135,15 +187,42 @@ export class SetViewComponent implements OnInit, OnDestroy {
       }
     };
 
-    const commit = await this.commitBuilder.create(this.setId!, [changeSetScoreCommand], view, previousCommitId);
+    let content: SetCommit = {
+      commands: [
+        changeSetScoreCommand,
+      ],
+      header: {
+        setId: { value: this.setId },
+        commitId: { value: uuidv4() },
+        createdAt: await this.clockService.getTimestamp(),
+        previousCommitId: previousCommitId,
+        author: {
+          userId: { value: this.identityService.userId! },
+          sessionId: { value: this.identityService.stored.sessionId! },
+          displayName: this.identityService.stored.displayName!,
+        },
+      },
+      view: view
+    };
 
-    await this.setCommitService.push(commit);
+    await this.pushMessage(content);
+  }
+
+  private async pushMessage(content: SetCommit) {
+    let builder = new MessageBuilder();
+    let cryptoKeyPair: CryptoKeyPair = {
+      privateKey: (await this.keyStorageService.getPrivateKey())!,
+      publicKey: (await this.keyStorageService.getPublicKey())!
+    };
+    let message = await builder.buildMessage(content, cryptoKeyPair);
+    await this.setsHub.push(message);
   }
 
   async addGame() {
+    if (!this.setId) return;
     const setState = await firstValueFrom(this.setState$);
-    let view: SetView = setState.view;
-    let previousCommitId = setState.header.commitId?.value;
+    let view: SetView = setState.content.view;
+    let previousCommitId = setState.content.header.commitId;
     let addGameCommand: SetCommitCommand = {
       type: 'AddGame',
       position: view.games.length,
@@ -172,18 +251,37 @@ export class SetViewComponent implements OnInit, OnDestroy {
       initialReceiver: nextReceiver,
       currentServer: nextServer,
       currentReceiver: nextReceiver,
-      points: {home: 0, away: 0},
+      points: { home: 0, away: 0 },
       watches: [],
     });
 
-    const commit = await this.commitBuilder.create(this.setId!, [addGameCommand, setInitialServerCommand, setCurrentServerCommand], view, previousCommitId);
+    let content: SetCommit = {
+      commands: [
+        addGameCommand,
+        setInitialServerCommand,
+        setCurrentServerCommand
+      ],
+      header: {
+        setId: { value: this.setId },
+        commitId: { value: uuidv4() },
+        createdAt: await this.clockService.getTimestamp(),
+        previousCommitId: previousCommitId,
+        author: {
+          userId: { value: this.identityService.userId! },
+          sessionId: { value: this.identityService.stored.sessionId! },
+          displayName: this.identityService.stored.displayName!,
+        },
+      },
+      view: view
+    };
 
-    await this.setCommitService.push(commit);
+    await this.pushMessage(content);
   }
 
   async increaseGameScore(side: 'home' | 'away') {
+    if (!this.setId) return;
     const setState = await firstValueFrom(this.setState$);
-    let view: SetView = setState.view;
+    let view: SetView = setState.content.view;
     if (view.games.length == 0) {
       throw new Error("No games in set");
     }
@@ -196,7 +294,7 @@ export class SetViewComponent implements OnInit, OnDestroy {
 
     view.games[gameIndex].points[side] += 1;
 
-    let previousCommitId = setState.header.commitId?.value;
+    let previousCommitId = setState.content.header.commitId!;
     let updateGameScoreCommand: UpdateGameScoreCommand = {
       type: 'UpdateGameScore',
       gameIndex: gameIndex,
@@ -228,7 +326,24 @@ export class SetViewComponent implements OnInit, OnDestroy {
       commands.push(setCurrentServerCommand);
     }
 
-    const commit = await this.commitBuilder.create(this.setId!, commands, view, previousCommitId);
-    await this.setCommitService.push(commit);
+    let content: SetCommit = {
+      commands: [
+        ...commands,
+      ],
+      header: {
+        setId: { value: this.setId },
+        commitId: { value: uuidv4() },
+        createdAt: await this.clockService.getTimestamp(),
+        previousCommitId: previousCommitId,
+        author: {
+          userId: { value: this.identityService.userId! },
+          sessionId: { value: this.identityService.stored.sessionId! },
+          displayName: this.identityService.stored.displayName!,
+        },
+      },
+      view: view
+    };
+
+    await this.pushMessage(content);
   }
 }

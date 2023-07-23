@@ -1,8 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
-import {lastValueFrom} from "rxjs";
-import {SetApiService} from "../../set/set-api.service";
-import {SetFormData} from "../../set/set-form/set-form.component";
+import { Component, OnInit } from '@angular/core';
+import { Router } from "@angular/router";
+import { SetFormData } from "../../set/set-form/set-form.component";
+import { SetApi } from '@nttb/t3-api-client';
 
 @Component({
   selector: 'app-page-set-create',
@@ -13,7 +12,7 @@ export class PageSetCreateComponent implements OnInit {
 
   constructor(
     private readonly router: Router,
-    private readonly setApi: SetApiService,
+    private readonly setApi: SetApi,
   ) {
   }
 
@@ -21,9 +20,9 @@ export class PageSetCreateComponent implements OnInit {
   }
 
   async OnSubmitClicked(ev: SetFormData) {
-    await lastValueFrom(this.setApi.create({
+    await this.setApi.create({
       displayName: ev.displayName
-    }));
+    });
 
     await this.router.navigate(['/sets']);
   }

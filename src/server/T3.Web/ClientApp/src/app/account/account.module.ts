@@ -4,7 +4,6 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 import {SharedModule} from "../shared/shared.module";
 
-import {AccountApiService} from "./account-api.service";
 
 import {LoginFormComponent} from './login-form/login-form.component';
 import {CreateAccountFormComponent} from './create-account-form/create-account-form.component';
@@ -23,9 +22,6 @@ import { PostLoginFormComponent } from './post-login-form/post-login-form.compon
     FormsModule,
     ReactiveFormsModule,
     SharedModule
-  ],
-  providers: [
-    AccountApiService,
   ],
   exports: [
     CreateAccountFormComponent,

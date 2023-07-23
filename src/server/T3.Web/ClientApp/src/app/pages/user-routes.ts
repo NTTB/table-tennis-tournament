@@ -9,7 +9,6 @@ import {PageSetViewComponent} from "./page-set-view/page-set-view.component";
 import {PageAccountKeysComponent} from "./page-account-keys/page-account-keys.component";
 import {PageLoginPostComponent} from "./page-login-post/page-login-post.component";
 import {PageTestSecretKeysComponent} from "./page-test-secret-keys/page-test-secret-keys.component";
-import {PageTestSecretNoteComponent} from "./page-test-secret-note/page-test-secret-note.component";
 
 export const userRoutes: Routes = [
   // { path: 'status', component: PageStatusComponent },
@@ -29,7 +28,6 @@ export const userRoutes: Routes = [
   {path: 'sets/:id', component: PageSetViewComponent},
 
   {path: 'test/secret-keys', component: PageTestSecretKeysComponent},
-  {path: 'test/secret-note', component: PageTestSecretNoteComponent},
 
   // { path: '**', component: PageContentComponent },
 ];

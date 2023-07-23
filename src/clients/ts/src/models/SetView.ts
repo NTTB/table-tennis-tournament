@@ -6,8 +6,8 @@ import { WatchView } from "./WatchView";
 
 export interface SetView {
   gamesWon: Score;
-  homePlayers?: TeamView;
-  awayPlayers?: TeamView;
+  homeTeam?: TeamView;
+  awayTeam?: TeamView;
   games: GameView[];
   setWatches: WatchView[];
   penaltyEvents: PenaltyEvent[];

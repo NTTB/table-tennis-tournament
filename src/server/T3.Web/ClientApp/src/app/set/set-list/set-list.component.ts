@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {SetApiService, SetEntity} from "../set-api.service";
-import {tap, BehaviorSubject, switchMap, lastValueFrom,} from "rxjs";
+import { Component, OnInit } from '@angular/core';
+import { SetEntity, SetApi } from '@nttb/t3-api-client';
+import { BehaviorSubject, switchMap } from "rxjs";
 
 @Component({
   selector: 'app-set-list',
@@ -10,21 +10,18 @@ import {tap, BehaviorSubject, switchMap, lastValueFrom,} from "rxjs";
 export class SetListComponent implements OnInit {
 
   constructor(
-    private readonly setApiService: SetApiService
+    private readonly setApi: SetApi,
   ) {
   }
 
   reload$ = new BehaviorSubject(null);
-  sets$ = this.reload$.pipe(switchMap(_ => this.setApiService.getAll()));
+  sets$ = this.reload$.pipe(switchMap(_ => this.setApi.getAll()));
 
   ngOnInit(): void {
   }
 
   async delete(set: SetEntity) {
-    await lastValueFrom(this.setApiService.delete(set.id).pipe(
-      tap(() => {
-        this.reload$.next(null);
-      }),
-    ))
+    await this.setApi.delete(set.id);
+    this.reload$.next(null);
   }
 }
