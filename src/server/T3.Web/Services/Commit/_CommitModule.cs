@@ -1,7 +1,5 @@
 using MongoDB.Bson.Serialization;
-using T3.Web.Services.Commit.Entities;
-using T3.Web.Services.Commit.Models;
-using T3.Web.Services.Data;
+using T3.Data.Shared;
 
 namespace T3.Web.Services.Commit;
 
@@ -9,10 +7,10 @@ public static class CommitModule
 {
     public static IServiceCollection AddCommitModule(this IServiceCollection collection)
     {
-        var baseClassMap = BsonClassMap.RegisterClassMap<SetCommitCommand>();
+        var baseClassMap = BsonClassMap.RegisterClassMap<MatchCommitCommand>();
         baseClassMap.AutoMap();
         
-        foreach (var type in SetCommitBodyTypes.GetTypes())
+        foreach (var type in MatchCommitBodyTypes.TypeMap.Values)
         {
             var explicitTypeMap = new BsonClassMap(type, baseClassMap);
             explicitTypeMap.AutoMap();
@@ -20,8 +18,8 @@ public static class CommitModule
         }
 
         return collection
-            .AddDbCollection<SetCommitEntity>("setCommits")
-            .AddScoped<ISetCommitService, SetCommitService>()
+            .AddDbCollection<MatchCommitEntity>("setCommits")
+            .AddScoped<IMatchCommitService, MatchCommitService>()
             ;
     }
 }

@@ -1,7 +1,5 @@
 using MongoDB.Driver;
 using T3.Web.Services.Shared;
-using T3.Web.Services.Timestamp.Entities;
-using T3.Web.Services.Timestamp.Models;
 
 namespace T3.Web.Services.Timestamp;
 

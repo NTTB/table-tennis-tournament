@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using T3.Web.Services.Timestamp;
-using T3.Web.Services.Timestamp.Models;
 
 namespace T3.Web.Controllers;
 

@@ -1,5 +1,4 @@
-using T3.Web.Services.Data;
-using T3.Web.Services.Timestamp.Entities;
+using T3.Data.Shared;
 
 namespace T3.Web.Services.Timestamp;
 

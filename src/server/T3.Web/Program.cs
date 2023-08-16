@@ -2,15 +2,12 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using T3.Data.Shared;
 using T3.Web.Hubs;
-using T3.Web.Migrations;
 using T3.Web.Services.Commit;
-using T3.Web.Services.Data;
 using T3.Web.Services.Identity;
-using T3.Web.Services.Rules;
-using T3.Web.Services.SecretNotes;
-using T3.Web.Services.Set;
-using T3.Web.Services.SetValidation;
+using T3.Web.Services.Match;
+using T3.Web.Services.MatchValidation;
 using T3.Web.Services.Shared;
 using T3.Web.Services.Timestamp;
 
@@ -22,20 +19,17 @@ var config = builder.Configuration;
 var jsonConverters = new JsonConverter[]
 {
     new JsonStringEnumConverter(),
-    new SecretNotePayloadConvertor(),
-    new SetCommitBodyConvertor()
+    new MatchCommitBodyConvertor()
 };
 
 builder.Services
     .AddSharedModule()
-    .AddDataService(config)
+    .AddDataService(sp => sp.GetRequiredService<IConfiguration>().GetConnectionString("Data") ?? throw new Exception("No connection string found"))
     .AddIdentityServices(config)
-    .AddRulesModule()
-    .AddSetModule()
+    .AddMatchModule()
     .AddSetValidationModule()
     .AddTimestampModule()
     .AddCommitModule()
-    .AddSecretNoteModule()
     .AddSignalR(options =>
     {
         options.EnableDetailedErrors = true;
@@ -106,7 +100,7 @@ app.MapControllerRoute(
     "default",
     "{controller}/{action=Index}/{id?}");
 
-app.MapHub<SetHub>("/hubs/set");
+app.MapHub<MatchHub>("/hubs/set");
 
 app.MapFallbackToFile("index.html");
 
