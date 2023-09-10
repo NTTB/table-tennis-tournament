@@ -9,6 +9,7 @@
         <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <RootNamespace>T3.Web</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -70,6 +71,7 @@
 
 
     <ItemGroup>
+      <ProjectReference Include="..\T3.Common.Models\T3.Common.Models.csproj" />
       <ProjectReference Include="..\T3.Data.Shared\T3.Data.Shared.csproj" />
     </ItemGroup>
 

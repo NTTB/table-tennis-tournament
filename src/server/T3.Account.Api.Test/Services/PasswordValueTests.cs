@@ -1,7 +1,7 @@
 using System.Text;
-using T3.Web.Services.Identity;
+using T3.Account.Api.Values;
 
-namespace T3.Web.Test.Services.Identity;
+namespace T3.Account.Api.Test.Services;
 
 public class PasswordValueTests
 {

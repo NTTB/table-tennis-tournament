@@ -27,6 +27,4 @@ public record PenaltyEvent
     ///     The card that was assigned.
     /// </summary>
     public required PenaltyCard Card { get; init; }
-    
-    // TODO: We need to know in which game/set this was given.
 }

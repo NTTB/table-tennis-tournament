@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Options;
-using T3.Web.Services.Identity;
+using NSubstitute;
+using T3.Account.Api.Services;
 
-namespace T3.Web.Test.Services.Identity;
+namespace T3.Account.Api.Test.Services;
 
 public class PasswordV1ServiceTests
 {
@@ -15,10 +16,10 @@ public class PasswordV1ServiceTests
             HashSize = 64
         };
 
-        var settingsMock = new Moq.Mock<IOptions<PasswordV1Service.Settings>>();
-        settingsMock.Setup(x => x.Value).Returns(settings);
+        var settingsMock = Substitute.For<IOptions<PasswordV1Service.Settings>>();
+        settingsMock.Value.Returns(settings);
 
-        var sut = new PasswordV1Service(settingsMock.Object);
+        var sut = new PasswordV1Service(settingsMock);
         var rawPassword = "password";
         var hashedPassword = sut.Hash(rawPassword);
 
@@ -39,10 +40,10 @@ public class PasswordV1ServiceTests
             SaltSize = 16,
             HashSize = 64
         };
-        var settingsMock = new Moq.Mock<IOptions<PasswordV1Service.Settings>>();
-        settingsMock.Setup(x => x.Value).Returns(settings);
+        var settingsMock = Substitute.For<IOptions<PasswordV1Service.Settings>>();
+        settingsMock.Value.Returns(settings);
 
-        var sut = new PasswordV1Service(settingsMock.Object);
+        var sut = new PasswordV1Service(settingsMock);
         var rawPassword = "password";
         var hashedPassword = sut.Hash(rawPassword);
 
@@ -59,9 +60,9 @@ public class PasswordV1ServiceTests
             SaltSize = TestContext.CurrentContext.Random.Next(8, 32),
             HashSize = TestContext.CurrentContext.Random.Next(16, 64)
         };
-        var settingsMock1 = new Moq.Mock<IOptions<PasswordV1Service.Settings>>();
-        settingsMock1.Setup(x => x.Value).Returns(settings1);
-        var sut1 = new PasswordV1Service(settingsMock1.Object);
+        var settingsMock1 = Substitute.For<IOptions<PasswordV1Service.Settings>>();
+        settingsMock1.Value.Returns(settings1);
+        var sut1 = new PasswordV1Service(settingsMock1);
 
         // The second instance has different settings
         var settings2 = new PasswordV1Service.Settings()
@@ -71,9 +72,9 @@ public class PasswordV1ServiceTests
             HashSize = settings1.HashSize + 10
         };
 
-        var settingsMock2 = new Moq.Mock<IOptions<PasswordV1Service.Settings>>();
-        settingsMock2.Setup(x => x.Value).Returns(settings2);
-        var sut2 = new PasswordV1Service(settingsMock2.Object);
+        var settingsMock2 = Substitute.For<IOptions<PasswordV1Service.Settings>>();
+        settingsMock2.Value.Returns(settings2);
+        var sut2 = new PasswordV1Service(settingsMock2);
 
         var rawPassword = TestContext.CurrentContext.Random.GetString();
 
