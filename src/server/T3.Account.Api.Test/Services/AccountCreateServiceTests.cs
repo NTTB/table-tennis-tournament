@@ -7,9 +7,9 @@ using T3.Account.Api.Services;
 
 namespace T3.Account.Api.Test.Services;
 
-public class AccountServiceTests
+public class AccountCreateServiceTests
 {
-    private IAccountService _sut = null!;
+    private IAccountCreateService _sut = null!;
     private IPasswordService _passwordService = null!;
     private IAccountRepository _accountRepository = null!;
 
@@ -18,7 +18,7 @@ public class AccountServiceTests
     {
         _passwordService = Substitute.For<IPasswordService>();
         _accountRepository = Substitute.For<IAccountRepository>();
-        _sut = new AccountService(_accountRepository, _passwordService);
+        _sut = new AccountCreateService(_accountRepository, _passwordService);
     }
 
     [Test]
@@ -34,15 +34,11 @@ public class AccountServiceTests
 
         var result = await _sut.Create(request);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Id, Is.Not.EqualTo(Guid.Empty), "The account id should not be empty.");
-            Assert.That(result.Username, Is.EqualTo(request.Username), "The username should be the same as the request.");
-            Assert.That(result.PasswordHash, Is.EqualTo(fakePasswordHash.ToSerializedString()), "The password should be hashed.");
-        });
+
+        Assert.That(result.AccountId, Is.Not.EqualTo(Guid.Empty), "The account id should not be empty.");
 
         await _accountRepository.Received(1).InsertOne(Arg.Is<AccountEntity>(x =>
-            x.Username == request.Username && x.PasswordHash == fakePasswordHash.ToSerializedString() && x.Id == result.Id));
+            x.Username == request.Username && x.PasswordHash == fakePasswordHash.ToSerializedString() && x.Id == result.AccountId));
     }
 
     [Test]
@@ -68,15 +64,24 @@ public class AccountServiceTests
     }
 
     [Test]
-    public async Task Create__throws_if_username_already_in_use()
+    public void Create__throws_if_username_already_in_use()
     {
         var username = RandomData.NextUsername();
         var request1 = new CreateAccountRequest(username, RandomData.NextPassword());
         var request2 = new CreateAccountRequest(username, RandomData.NextPassword());
 
         _passwordService.Hash(Arg.Any<string>()).Returns(RandomData.NextPasswordValue());
-        _accountRepository.FindByUsername(username).Returns(Task.FromResult<AccountEntity?>(null),
-            Task.FromResult(new AccountEntity(Guid.Empty, string.Empty, string.Empty)));
+        string username1 = string.Empty;
+        string passwordHash = string.Empty;
+        _accountRepository.FindByUsername(username).Returns(
+            Task.FromResult<AccountEntity?>(null), // First response
+            Task.FromResult<AccountEntity?>(new AccountEntity
+            {
+                Id = Guid.Empty,
+                Username = username1,
+                PasswordHash = passwordHash
+            }) // second response
+        );
 
         // First find on account collection returns no results, the second find returns a result.
         Assume.That(async () => await _sut.Create(request1), Throws.Nothing, "The first request should not throw.");
