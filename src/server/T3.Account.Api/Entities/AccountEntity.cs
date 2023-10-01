@@ -6,6 +6,6 @@ namespace T3.Account.Api.Entities;
 public class AccountEntity
 {
     [Indexed, RedisIdField] public Guid Id { get; init; }
-    [Indexed] public string Username { get; init; }
+    [Indexed] public required string Username { get; init; }
     public required string PasswordHash { get; set; }
 }

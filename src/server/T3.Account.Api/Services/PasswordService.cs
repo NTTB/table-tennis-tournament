@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.Extensions.Options;
+using T3.Account.Api.Settings;
 using T3.Account.Api.Values;
 
 namespace T3.Account.Api.Services;
@@ -14,27 +15,20 @@ public interface IPasswordService
 // so we need to be able to support multiple versions.
 public class PasswordV1Service : IPasswordService
 {
-    private readonly IOptions<Settings> _settings;
+    private readonly PasswordV1Settings _settings;
     public const string Version = "v1";
 
-    public class Settings
-    {
-        public int SaltSize { get; set; }
-        public int HashSize { get; set; }
-        public int Iterations { get; set; }
-    }
-
-    public PasswordV1Service(IOptions<Settings> settings)
+    public PasswordV1Service(PasswordV1Settings settings)
     {
         _settings = settings;
     }
 
     public PasswordValue Hash(string password)
     {
-        var iterations = _settings.Value.Iterations;
+        var iterations = _settings.Iterations;
         
-        byte[] salt = GenerateSalt(_settings.Value.SaltSize);
-        byte[] hash = GenerateHash(password, salt, iterations, _settings.Value.HashSize);
+        byte[] salt = GenerateSalt(_settings.SaltSize);
+        byte[] hash = GenerateHash(password, salt, iterations, _settings.HashSize);
 
         return new PasswordValue()
         {

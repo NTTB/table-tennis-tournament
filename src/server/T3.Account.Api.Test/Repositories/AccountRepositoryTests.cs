@@ -73,8 +73,8 @@ public class AccountRepositoryTests
         Assert.Multiple(() =>
         {
             Assert.That(expressions, Has.Count.EqualTo(1));
-            Assert.That(expressions.First().Compile().Invoke(new AccountEntity { Id = id, PasswordHash = null!}), Is.True, "Id should match");
-            Assert.That(expressions.First().Compile().Invoke(new AccountEntity { Id = Guid.NewGuid(), PasswordHash = null!}), Is.False, "Id should not match");
+            Assert.That(expressions.First().Compile().Invoke(new AccountEntity { Id = id, Username = RandomData.NextUsername(), PasswordHash = null!}), Is.True, "Id should match");
+            Assert.That(expressions.First().Compile().Invoke(new AccountEntity { Id = Guid.NewGuid(),  Username = RandomData.NextUsername(), PasswordHash = null!}), Is.False, "Id should not match");
         });
     }
 }

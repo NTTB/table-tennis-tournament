@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using System.Diagnostics.CodeAnalysis;
+using NSubstitute;
 using Redis.OM.Searching;
 using T3.Account.Api.Repositories;
 
@@ -13,6 +14,7 @@ public class BaseRepositoryTests
     private IRedisCollection<FakeEntity> _collection = Substitute.For<IRedisCollection<FakeEntity>>();
     private IRepository<FakeEntity> _sut = Substitute.For<IRepository<FakeEntity>>();
 
+    [ExcludeFromCodeCoverage(Justification = "Fake entity used for testing")]
     public class FakeEntity
     {
         public Guid Id { get; set; }

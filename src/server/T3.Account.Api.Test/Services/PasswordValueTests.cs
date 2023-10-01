@@ -44,6 +44,63 @@ public class PasswordValueTests
             .Returns($"v2$1234${ToBytesBase64(randomSalt)}$option1$option2${ToBytesBase64(randomHash)}")
             .SetName("Check with random values");
     }
+    
+    [TestCase("")]
+    [TestCase("v1")]
+    [TestCase("v1$")]
+    [TestCase("v1$1000$")]
+    [TestCase("v1$1000$DEAD")]
+    public void Parse__throws_if_values_are_missing(string input)
+    {
+        Assert.That(() => PasswordValue.Parse(input), Throws.Exception.With.Message.Contains("The input string is not valid. It must contain at least 4 values separated by '$'."));
+    }
+
+    [Test]
+    public void ToSerializedString__throws_if_version_has_dollar_sign()
+    {
+        var sut =new PasswordValue()
+        {
+            Version = "$v1",
+            Iterations = RandomData.NextNumber(),
+            Salt = RandomData.NextByteArray(100),
+            Hash = RandomData.NextByteArray(100),
+            Options = null
+        };
+        
+        Assert.That(()=> sut.ToSerializedString(), Throws.Exception.With.Message.Contains("The value '$v1' contains a '$' which is not allowed in the Version parameter."));
+    }
+    
+    
+    [Test]
+    public void ToSerializedString__throws_if_option_has_dollar_sign()
+    {
+        var sut =new PasswordValue()
+        {
+            Version = "v1",
+            Iterations = RandomData.NextNumber(),
+            Salt = RandomData.NextByteArray(100),
+            Hash = RandomData.NextByteArray(100),
+            Options = new string[]{ "$sign" }
+        };
+        
+        Assert.That(()=> sut.ToSerializedString(), Throws.Exception.With.Message.Contains("The value '$sign' contains a '$' which is not allowed in the options[0] parameter."));
+    }
+    
+        
+    [Test]
+    public void ToSerializedString__throws_if_another_option_has_dollar_sign()
+    {
+        var sut =new PasswordValue()
+        {
+            Version = "v1",
+            Iterations = RandomData.NextNumber(),
+            Salt = RandomData.NextByteArray(100),
+            Hash = RandomData.NextByteArray(100),
+            Options = new string[]{ RandomData.NextString(10, "abcdefghijklmnopqrstuvwxyz"), "$sign" }
+        };
+        
+        Assert.That(()=> sut.ToSerializedString(), Throws.Exception.With.Message.Contains("The value '$sign' contains a '$' which is not allowed in the options[1] parameter."));
+    }
 
     [TestOf(nameof(PasswordValue))]
     [TestCaseSource(nameof(ParseCases))]
@@ -95,5 +152,6 @@ public class PasswordValueTests
                 $"v2$1234${ToBytesBase64(randomSalt)}$option1$option2${ToBytesBase64(randomHash)}",
                 "v2", 1234, ToBytes(randomSalt), ToBytes(randomHash), new[] { "option1", "option2" })
             .SetName("Check with random values");
+        
     }
 }

@@ -1,0 +1,47 @@
+﻿using System.Security.Cryptography;
+using JWT.Algorithms;
+using JWT.Builder;
+using NSubstitute;
+using T3.Account.Api.Entities;
+using T3.Account.Api.Services;
+
+namespace T3.Account.Api.Test.Services;
+
+public class AccountWebTokenServiceTests
+{
+    private IAccountWebTokenGenerator _sut = Substitute.For<IAccountWebTokenGenerator>();
+    private IWebTokenAlgorithmGenerator _webTokenAlgorithmGenerator = Substitute.For<IWebTokenAlgorithmGenerator>();
+
+    [SetUp]
+    public void SetUp()
+    {
+        _webTokenAlgorithmGenerator = Substitute.For<IWebTokenAlgorithmGenerator>();
+        _sut = new AccountWebTokenGenerator(_webTokenAlgorithmGenerator);
+    }
+    
+    [Test]
+    public void GenerateToken__throws_if_account_is_null()
+    {
+        Assert.That(() => _sut.Generate(null!, RandomData.NextString()), Throws.TypeOf<ArgumentNullException>().And.Message.Contain("AccountEntity cannot be null"));
+    }
+    
+    [Test]
+    public void GenerateToken__returns_jwt_token()
+    {
+        using var key = RSA.Create(2048);
+        var algorithm = new RS384Algorithm(key, key);
+        _webTokenAlgorithmGenerator.Algorithm.Returns(algorithm);
+
+        var audience = RandomData.NextString();
+        var givenName = RandomData.NextString();
+        var subject = RandomData.NextString();
+        var jwtToken =  _sut.Generate(new AccountInfo(subject, givenName), audience);
+        Assert.That(jwtToken, Is.Not.Null);
+
+        var parsedOutcome =JwtBuilder.Create().WithAlgorithm(algorithm).Decode(jwtToken);
+        
+        Assert.That(parsedOutcome, Contains.Substring($"\"given_name\":\"{givenName}\""));
+        Assert.That(parsedOutcome, Contains.Substring($"\"sub\":\"{subject}\""));
+        Assert.That(parsedOutcome, Contains.Substring($"\"aud\":\"{audience}\""));
+    }
+}
