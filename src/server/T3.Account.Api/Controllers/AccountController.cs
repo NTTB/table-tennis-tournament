@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using T3.Account.Api.Errors;
 using T3.Account.Api.Models;
@@ -26,9 +27,11 @@ public class AccountController : ControllerBase
     [HttpPost]
     public async Task<CreateAccountResponse> Create(CreateAccountRequest request) => await _accountCreateService.Create(request);
     
+    [Authorize]
     [HttpPost("change-password")]
     public async Task<ChangePasswordResponse> ChangePassword(ChangePasswordRequest request) => await _accountChangePasswordService.ChangePassword(request);
 
+    [Authorize]
     [HttpDelete("{accountId:guid}")]
     public async Task Delete(Guid accountId) 
     {

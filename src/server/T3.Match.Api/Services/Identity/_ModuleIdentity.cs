@@ -21,7 +21,6 @@ public static class ModuleIdentity
         return collection
                 .AddScoped<IPasswordService, PasswordV1Service>()
                 .AddScoped<IAccountCreateService, AccountCreateService>()
-                .AddScoped<IAccountLoginService, AccountLoginService>()
                 .AddScoped<IAccountPublicKeyService, AccountPublicKeyService>()
                 .AddScoped<IAccountTokenService, AccountTokenService>()
             ;

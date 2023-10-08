@@ -13,30 +13,21 @@ public class AccountController : ControllerBase
     private readonly IAccountPublicKeyService _accountPublicKeyService;
     private readonly IAccountTokenService _accountTokenService;
     private readonly IAccountCreateService _accountCreateService;
-    private readonly IAccountLoginService _accountLoginService;
 
     public AccountController(
         IAccountCreateService accountCreateService,
-        IAccountLoginService accountLoginService,
         IAccountPublicKeyService accountPublicKeyService,
         IAccountTokenService accountTokenService)
     {
         _accountPublicKeyService = accountPublicKeyService;
         _accountTokenService = accountTokenService;
         _accountCreateService = accountCreateService;
-        _accountLoginService = accountLoginService;
     }
 
     [HttpPost("create")]
     public async Task<AccountCreateResponse> Create([FromBody] AccountCreateRequest request)
     {
         return await _accountCreateService.CreateNew(request);
-    }
-
-    [HttpPost("login")]
-    public async Task<AccountLoginResponse> Login([FromBody] AccountLoginRequest request)
-    {
-        return await _accountLoginService.Login(request);
     }
     
     [HttpPost("test")]

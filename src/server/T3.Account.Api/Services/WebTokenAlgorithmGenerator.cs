@@ -71,7 +71,7 @@ public sealed class WebTokenAlgorithmGenerator : IWebTokenAlgorithmGenerator
         
         _publicKey = newPublicKey;
         _privateKey = newPrivateKey;
-        Algorithm = new RS2048Algorithm(_publicKey, _privateKey);
+        Algorithm = new RS256Algorithm(_publicKey, _privateKey);
         
         oldPublicKey?.Dispose();
         oldPrivateKey?.Dispose();
