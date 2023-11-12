@@ -37,7 +37,7 @@ public class AccountLoginService : IAccountLoginService
         var passwordValue = PasswordValue.Parse(account.PasswordHash);
         if(!_passwordService.Verify(request.Password, passwordValue)) throw new LoginException("Failed to verify password");
 
-        var token = _accountWebTokenGenerator.Generate(new AccountInfo(account.Id.ToString(), account.Username), request.Audience);
+        var token = _accountWebTokenGenerator.Generate(new AccountInfo(account.Id.ToString(), account.Username));
         return new LoginResponse(token);
     }
 }

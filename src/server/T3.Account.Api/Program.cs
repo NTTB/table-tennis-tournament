@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -67,7 +66,6 @@ internal class Program
             
             // NOTE: The keys are always generated on startup and loaded from disk.
             // And this function is only called when we need to validate a token so the files should exist at this point.
-            // TODO: How do we handle key rotation without restarting the service?
             var publicKey = RSA.Create(2048);
             publicKey.ImportFromPem(File.ReadAllText(webTokenSettings.PublicKeyPath));
             
@@ -77,27 +75,13 @@ internal class Program
                 ValidateIssuer = true,
                 ValidIssuer = tokenSettings.Issuer,
                 
-                // TODO: Do we need to verify the audience? We only need to verify that we are the issuer.
+                // The audience is always verified since there can only be one audience when interacting with this http-api
                 ValidateAudience = true,
-                ValidAudience = "string",
+                ValidAudience = tokenSettings.Issuer,
                 
-                // TODO: How do we verify signing keys that are expired? Can we provide the user with a smooth transition?
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new RsaSecurityKey(publicKey),
-            };
-
-            options.Events = new JwtBearerEvents
-            {
-                OnTokenValidated = context =>
-                {
-                    // Find the 'sub' claim and set it as the 'Name' property.
-                    if (context.Principal == null) return Task.CompletedTask;
-                    var subClaim = context.Principal.FindFirst("sub");
-                    if (subClaim == null) return Task.CompletedTask;
-                    if (context.Principal.Identity is not ClaimsIdentity identity) return Task.CompletedTask;
-                    identity.AddClaim(new Claim(ClaimTypes.Name, subClaim.Value));
-                    return Task.CompletedTask;
-                }
+                
             };
         });
 
@@ -117,14 +101,17 @@ internal class Program
                 var openApiSecurityRequirement = new OpenApiSecurityRequirement();
                 var securityScheme = new OpenApiSecurityScheme
                 {
-                    Scheme = "oauth2",
+                    Description =  "JWT Authorization header using the Bearer scheme.\n\n",
+                    Scheme = "bearer",
+                    Type = SecuritySchemeType.Http,
                     Reference = new OpenApiReference()
                     {
                         Id = "Bearer",
-                        Type = ReferenceType.SecurityScheme,
+                        Type = ReferenceType.SecurityScheme
                     },
                     In = ParameterLocation.Header,
-                    Name = "Bearer"
+                    Name = "Bearer",
+                    
                 };
 
                 openApiSecurityRequirement.Add(securityScheme, new List<string>());

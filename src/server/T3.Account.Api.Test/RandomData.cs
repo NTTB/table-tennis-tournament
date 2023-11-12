@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
@@ -68,10 +69,18 @@ public static class RandomData
         return Randomizer.GetString(length);
     }
 
-    public static HttpContext CreateHttpContextForUser(Guid accountId)
+    public static HttpContext CreateHttpContextForUser(Guid accountId, string username)
     {
         var httpContextForUser = Substitute.For<HttpContext>();
-        httpContextForUser.User = new GenericPrincipal(new GenericIdentity(accountId.ToString()), null);
+        var identity = new GenericIdentity(string.Empty);
+        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, accountId.ToString()));
+        identity.AddClaim(new Claim(ClaimTypes.GivenName, username));
+        httpContextForUser.User = new GenericPrincipal(identity, null);
         return httpContextForUser;
+    }
+
+    public static string NextNameIdentifier()
+    {
+        return Guid.NewGuid().ToString();
     }
 }

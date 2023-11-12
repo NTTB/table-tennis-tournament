@@ -36,7 +36,7 @@ public class AccountLoginServiceTests
         var password = RandomData.NextPassword();
         var audience = RandomData.NextAudience();
         Assert.That(
-            async () => await _sut.Login(new LoginRequest(username, password, audience)),
+            async () => await _sut.Login(new LoginRequest(username, password)),
             Throws.TypeOf<LoginException>().With.Message.Contains("Username not found")
         );
     }
@@ -59,12 +59,12 @@ public class AccountLoginServiceTests
 
         _accountRepository.FindByUsername(username)!.Returns(Task.FromResult(validAccount));
         _accountWebTokenGenerator
-            .Generate(Arg.Is<AccountInfo>(x => x.Subject == newGuid.ToString() && x.GivenName == username), audience)
+            .Generate(Arg.Is<AccountInfo>(x => x.Subject == newGuid.ToString() && x.GivenName == username))
             .Returns("fake-jwt-token");
 
         _passwordService.Verify(password, Arg.Any<PasswordValue>()).Returns(true);
 
-        var response = await _sut.Login(new LoginRequest(username, password, audience));
+        var response = await _sut.Login(new LoginRequest(username, password));
         Assert.That(response.Token, Is.EqualTo("fake-jwt-token"));
     }
     
@@ -88,7 +88,7 @@ public class AccountLoginServiceTests
         _passwordService.Verify(password, Arg.Any<PasswordValue>()).Returns(false);
 
         Assert.That(
-            async () => await _sut.Login(new LoginRequest(username, password, audience)),
+            async () => await _sut.Login(new LoginRequest(username, password)),
             Throws.TypeOf<LoginException>().With.Message.Contains("Failed to verify password")
         );
     }

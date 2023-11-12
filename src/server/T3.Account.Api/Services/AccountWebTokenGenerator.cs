@@ -10,6 +10,14 @@ public record AccountInfo(string Subject, string GivenName);
 
 public interface IAccountWebTokenGenerator
 {
+    /// <summary>
+    /// Generate a token for the issuing server
+    /// </summary>
+    string Generate(AccountInfo entity);
+    
+    /// <summary>
+    /// Generate a token for another server.
+    /// </summary>
     string Generate(AccountInfo entity, string audience);
 }
 
@@ -22,6 +30,11 @@ public class AccountWebTokenGenerator : IAccountWebTokenGenerator
     {
         _algorithmGenerator = algorithmGenerator;
         _accountTokenSettings = accountTokenSettings;
+    }
+
+    public string Generate(AccountInfo entity)
+    {
+        return Generate(entity, _accountTokenSettings.Issuer);
     }
 
     public string Generate(AccountInfo entity, string audience)

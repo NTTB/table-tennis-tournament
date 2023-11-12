@@ -1,0 +1,25 @@
+### Create user (skip if already created)
+POST http://localhost:5189/Account
+Content-Type: application/json
+
+{
+  "username": "string",
+  "password": "string"
+}
+
+### Login and get token (which is stored in global variable `auth_token`)
+POST http://localhost:5189/Account/login
+Content-Type: application/json
+
+{
+  "username": "string",
+  "password": "string"
+}
+
+
+> {% client.global.set("auth_token", response.body.token); %}
+
+### Get info about my own account
+GET http://localhost:5189/Account/me
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
